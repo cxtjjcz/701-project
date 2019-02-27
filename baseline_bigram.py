@@ -15,9 +15,8 @@ def readData(rootPath):
 	movie_test = load_files(rootPath + "/aclImdb/test", shuffle=True, categories=category)
 	return [movie_train, movie_test]
 
-def createFeatureVec(dataset, feature_type = "bow"):	
-	# default is unigram + bigram and with stop words removed
-	count_vect = CountVectorizer(ngram_range=(1, 2), stop_words="english")
+def createFeatureVec(dataset, ngram_range, feature_type = "bow"):	
+	count_vect = CountVectorizer(ngram_range, stop_words="english")
 	feature_vector = count_vect.fit_transform(dataset.data)
 	if feature_type == "tf":
 		tf_transformer = TfidfTransformer(use_idf=False).fit(feature_vector)
@@ -27,8 +26,9 @@ def createFeatureVec(dataset, feature_type = "bow"):
 		feature_vector = tfidf_transformer.fit_transform(feature_vector)
 	return count_vect, feature_vector
 
-def trainNB(train_data, feature_type = "bow"):
-	train_count_vect, train_feature_vector = createFeatureVec(train_data, feature_type)
+def trainNB(train_data, feature_type="bow", ngram_range=(1, 2)):
+	# default is unigram + bigram and with stop words removed
+	train_count_vect, train_feature_vector = createFeatureVec(train_data, ngram_range, feature_type)
 	clf = MultinomialNB().fit(train_feature_vector, train_data.target)
 	train_error = np.mean(clf.predict(train_feature_vector) == train_data.target)
 	return ([train_error, train_count_vect, clf])
@@ -58,8 +58,10 @@ def testNB(clf, train_count_vect, test_data, feature_type = "bow"):
 # feature_type = "tf_idf" 
 #with unigram + bigram: training acc = 0.9844; test acc = 0.85476
 
+# ngram_range = (1, 2)
+
 # train_data, test_data = readData("701-project")
-# train_error, train_count_vect, clf = trainNB(train_data, feature_type)
+# train_error, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
 # test_error = testNB(clf, train_count_vect, test_data, feature_type)
 
 # print("Training Error:", train_error,"\nTesting Error",test_error)
