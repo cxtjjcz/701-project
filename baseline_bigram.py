@@ -5,6 +5,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.datasets import load_files
 from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
 import os
 
 
@@ -47,6 +48,14 @@ def testNB(clf, train_count_vect, test_data, feature_type = "bow"):
 	test_error = np.mean(clf.predict(test_feature_vector) == test_data.target)
 	return test_error
 
+def trainSVM(train_data, feature_type="bow", ngram_range=(1, 2)):
+	train_count_vect, train_feature_vector = createFeatureVec(train_data, ngram_range, feature_type)
+	print("enter")
+	clf = SVC(kernel="linear").fit(train_feature_vector, train_data.target)
+	print(clf.predict(train_feature_vector))
+	train_error = np.mean(clf.predict(train_feature_vector) == train_data.target)
+	return ([train_error, train_count_vect, clf])
+
 
 #uncomment lines below
 
@@ -62,8 +71,13 @@ feature_type = "bow"
 ngram_range = (1, 2)
 
 train_data, test_data = readData("")
-train_error, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
-test_error = testNB(clf, train_count_vect, test_data, feature_type)
+# train_error, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
+# test_error = testNB(clf, train_count_vect, test_data, feature_type)
 
-print("Training Error:", train_error,"\nTesting Error",test_error)
+train_error_svm, train_count_vect_error, clf_svm = trainSVM(train_data, feature_type, ngram_range)
+test_error_svm = testNB(clf_svm, train_count_vect_error, test_data, feature_type)
+print("SVM Training Error:", train_error_svm, "\nTesting Error", test_error_svm)
+# print("Training Error:", train_error,"\nTesting Error",test_error)
+
+
 
