@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.6.25)  2 MAR 2019 16:33
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.6.25)  2 MAR 2019 16:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -222,22 +222,22 @@ File: microtype.cfg 2018/01/14 v2.7a microtype main configuration file (RS)
 (./nips_2018.aux)
 \openout1 = `nips_2018.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
 \AtBeginShipoutBox=\box26
-Package hyperref Info: Link coloring OFF on input line 68.
+Package hyperref Info: Link coloring OFF on input line 62.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -247,15 +247,15 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count104
 )
-LaTeX Info: Redefining \ref on input line 68.
-LaTeX Info: Redefining \pageref on input line 68.
-LaTeX Info: Redefining \nameref on input line 68.
+LaTeX Info: Redefining \ref on input line 62.
+LaTeX Info: Redefining \pageref on input line 62.
+LaTeX Info: Redefining \nameref on input line 62.
 
 (./nips_2018.out) (./nips_2018.out)
 \@outlinefile=\write3
 \openout3 = `nips_2018.out'.
 
-LaTeX Info: Redefining \microtypecontext on input line 68.
+LaTeX Info: Redefining \microtypecontext on input line 62.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -270,7 +270,7 @@ Package microtype Info: No adjustment of character kerning.
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msa on input line 72.
+LaTeX Font Info:    Try loading font information for U+msa on input line 66.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -278,7 +278,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 72.
+LaTeX Font Info:    Try loading font information for U+msb on input line 66.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -286,27 +286,22 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-./nips_2018.tex:72: Undefined control sequence.
-<recently read> \AND 
-                     
-l.72 
-     
-? 
-./nips_2018.tex:72: Undefined control sequence.
-<recently read> \AND 
-                     
-l.72 
-     
-? 
-./nips_2018.tex:72: Undefined control sequence.
-<recently read> \AND 
-                     
-l.72 
-     
-? 
-./nips_2018.tex:97: Misplaced alignment tab character &.
-l.97 .... E., Pham, P. T., Huang, D., Ng, A. Y., &
+./nips_2018.tex:95: Misplaced alignment tab character &.
+l.95 .... E., Pham, P. T., Huang, D., Ng, A. Y., &
                                                    Potts, C. (2011, June). L...
+
+? 
+
+Underfull \hbox (badness 10000) in paragraph at lines 95--96
+
+ []
+
+[1
+
+{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+./nips_2018.tex:97: Misplaced alignment tab character &.
+l.97 [2] M{\"a}ntyl{\"a, M. V., Graziotin, D., &
+                                                 Kuutila, M. (2018). The evo...
 
 ? 
 
@@ -314,43 +309,37 @@ Underfull \hbox (badness 10000) in paragraph at lines 97--98
 
  []
 
-[1
-
-{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 ./nips_2018.tex:99: Misplaced alignment tab character &.
-l.99 [2] M{\"a}ntyl{\"a, M. V., Graziotin, D., &
-                                                 Kuutila, M. (2018). The evo...
+l.99 [3] Pang, B., Lee, L., &
+                              Vaithyanathan, S. (2002, July). Thumbs up?: se...
 
 ? 
-
-Underfull \hbox (badness 10000) in paragraph at lines 99--100
-
- []
-
-./nips_2018.tex:101: Misplaced alignment tab character &.
-l.101 [3] Pang, B., Lee, L., &
-                               Vaithyanathan, S. (2002, July). Thumbs up?: s...
-
-? 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 105.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 103.
 [2]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 105.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 103.
  (./nips_2018.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 105.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 105.
-Package rerunfilecheck Info: File `nips_2018.out' has not changed.
-(rerunfilecheck)             Checksum: 45F93DDA37853579E7CC25F4B3CFD1D6;260.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 105.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 103.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 103.
+
+
+Package rerunfilecheck Warning: File `nips_2018.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `nips_2018.out':
+(rerunfilecheck)             Before: 45F93DDA37853579E7CC25F4B3CFD1D6;260
+(rerunfilecheck)             After:  FAE1E074635FACC218A9ECC0EDF6C3B3;368.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 103.
  )
 (\end occurred inside a group at level 1)
 
-### simple group (level 1) entered at line 99 ({)
+### simple group (level 1) entered at line 97 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 6214 strings out of 492646
- 97525 string characters out of 6129563
- 216997 words of memory out of 5000000
- 10002 multiletter control sequences out of 15000+600000
+ 6215 strings out of 492646
+ 97529 string characters out of 6129563
+ 216951 words of memory out of 5000000
+ 10001 multiletter control sequences out of 15000+600000
  15307 words of font info for 64 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  31i,6n,38p,550b,351s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -362,10 +351,10 @@ m0900.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1
 0.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1728.
 pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfti0900.pf
 b>
-Output written on nips_2018.pdf (2 pages, 117156 bytes).
+Output written on nips_2018.pdf (2 pages, 118028 bytes).
 PDF statistics:
- 66 PDF objects out of 1000 (max. 8388607)
- 55 compressed objects within 1 object stream
- 9 named destinations out of 1000 (max. 500000)
+ 68 PDF objects out of 1000 (max. 8388607)
+ 57 compressed objects within 1 object stream
+ 11 named destinations out of 1000 (max. 500000)
  14377 words of extra memory for PDF output out of 14400 (max. 10000000)
 
