@@ -8,7 +8,7 @@ from sklearn.pipeline import Pipeline
 import os
 
 
-### 
+### ###
 def readData(rootPath):
 	category = ["pos","neg"]
 	#load only labeled data
