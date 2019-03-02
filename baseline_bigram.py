@@ -12,8 +12,8 @@ import os
 def readData(rootPath):
 	category = ["pos","neg"]
 	#load only labeled data
-	movie_train = load_files(rootPath + "/aclImdb/train", shuffle=True, categories=category)
-	movie_test = load_files(rootPath + "/aclImdb/test", shuffle=True, categories=category)
+	movie_train = load_files(rootPath + "aclImdb/train", shuffle=True, categories=category)
+	movie_test = load_files(rootPath + "aclImdb/test", shuffle=True, categories=category)
 	return [movie_train, movie_test]
 
 def createFeatureVec(dataset, ngram_range, feature_type = "bow"):	
@@ -50,8 +50,8 @@ def testNB(clf, train_count_vect, test_data, feature_type = "bow"):
 
 #uncomment lines below
 
-# feature_type = "bow" 
-#with unigram + bigram: training acc = 0.99704; test acc = 0.84272
+feature_type = "bow" 
+# with unigram + bigram: training acc = 0.99704; test acc = 0.84272
 
 # feature_type = "tf" 
 #with unigram + bigram: training acc = 0.94792; test acc = 0.85372
@@ -59,11 +59,11 @@ def testNB(clf, train_count_vect, test_data, feature_type = "bow"):
 # feature_type = "tf_idf" 
 #with unigram + bigram: training acc = 0.9844; test acc = 0.85476
 
-# ngram_range = (1, 2)
+ngram_range = (1, 2)
 
-# train_data, test_data = readData("701-project")
-# train_error, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
-# test_error = testNB(clf, train_count_vect, test_data, feature_type)
+train_data, test_data = readData("")
+train_error, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
+test_error = testNB(clf, train_count_vect, test_data, feature_type)
 
-# print("Training Error:", train_error,"\nTesting Error",test_error)
+print("Training Error:", train_error,"\nTesting Error",test_error)
 
