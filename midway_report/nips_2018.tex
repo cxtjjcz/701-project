@@ -66,20 +66,49 @@
 
 \section{Introduction}
 
-Sentiment Analysis is the task of classifying text documents by their sentiment, or overall opinion towards the subject matter [3]. Such analysis can not only provide concise summaries of texts to readers, but also has extended applications in security, medical, finance, and entertainment domains [2].
+Sentiment Analysis is the task of classifying text documents by their sentiment, or overall opinion towards the subject matter [4]. In practice, sentiment analysis is useful for companies and policymakers to monitor public opinions on specific products and policies at large scale, and thus extended applications of sentiment analysis can be found in security, medical, finance, and entertainment domains [4].
 
-In this project, the primary task is to classify the sentiment of a collection of 50,000 reviews posted on the Internet Movie Database. The dataset is balanced, containing the same number of positive and negative reviews, where positive reviews had a score greater than or equal to 7 and negative reviews had a score less than or equal to 4 [1]. 
+The goal of this project is to build an interpretable sentiment classifier based not only on text content information, but also on lexical polarity information and unobserved topic information that could be derived from the text, using one of the most analyzed dataset for sentiment analysis -- the IMDb Dataset of movie reviews. The dataset contains a collection of 50,000 reviews posted on the Internet Movie Database. Standard preprocessing ensures that the dataset is balanced, containing the same number of positive and negative reviews, where positive reviews had a score greater than or equal to 7 and negative reviews had a score less than or equal to 4 [3]. 
+
+Our primary task is to output a binary classification of an audience's attitude towards a movie based on his or her online review. To do that, we will experiment with both content-based and topic-based input representations of the movie reviews on a variety of classification models. The performance of our model will be evaluated based on classification accuracy.
+
 
 
 \section{Literature Review}
 
-A lot of work has been done on sentiment analysis for movie reviews. There are broadly three types of approaches towards polarity detection in the previous works : (1) Using a machine learning based text classifier - Random Forests, Support Vector Machine (SVM) or Na{\"i}ve Bayes (NB) - with chosen feature space (2) Using the unsupervised semantic orientation scheme of using frequent n-grams as features and labeling them (3) Using SentiWordNet, a lexical resource especially created for assisting sentiment classification.
+Literature review suggested that successful sentiment analysis requires finding (1) the most representative text embeddings and (2) the best performing classification scheme. 
 
-Some challenges in sentiment analysis includes separating irrelevant information from the topic of interest, determining the sequence of words impacted by negation, and finding the weights of words with different part of speech.
+For the first requirement, it is a standard practice to tokenize the text into sequences of n words, called n-gram representations, with bigram and trigram representations being the most widely used and showing superior results than unigram tokens [6]. To vectorize a tokenized text, common methods include counting the token occurrences (Bag-of-Words model) and assigning a TF-IDF score to each token in the corpus dictionary. However, the BoW and TF-IDF models are based solely on the text content. The joint sentiment/topic model proposed by Lin and He suggested that unsupervised topic modeling techniques such as LDA could potentially lead to more informative feature text representation for sentiment analysis [2]. Besides topic information, it was shown that weighting words by their lexical polarity and part of speech improves classification accuracy. 
+
+
+
+In terms of the second requirement for a successful sentiment analysis, several common choices of classifiers presented in previous works include Naive Bayes (NB), Support Vector Machine(SVM), and (Deep) Neural Networks (NN) [1] [6] . For the IMDB dataset, the current best classifier is ULMFiT, which is a LSTM-based model proposed by Howard and Ruder in 2018 [1]; SVM with NB features (NBSVM) proposed by Wang and Mannings showed superior performance among non-NN classifiers [6].
+
 
 \section{Methods}
 
+Currently, most existing works mainly focused on testing various classifiers on content-based feature vectors. Meanwhile, state-of-the-art results on sentiment analysis tasks tend to be given by neural networks. If text is classified by a neural network in an end-to-end manner, the exact features used by the model to make predictions become hard to interpret. With this in mind, we hope to explore an interpretable sentiment classifier based not only on text content information, but also on lexical polarity information and unobserved topic information that could be derived from the text.
+
+As a baseline, we explored multiple content-based vectorization and the two most effective classifiers on sentiment analysis. In case of text mining in combination with Bag-Of-Words and n-gram modeling, we trained the feature representations on the Naive Bayes and Support Vector Machine (SVM) classifiers as baseline models. For the SVM model, we used both linear and RBF kernels.
+
+
 \section{Preliminary Results}
+
+\begin{table}
+  \caption{Baseline Models and Test Accuracy}
+  \label{baseline-result}
+  \centering
+  \begin{tabular}{ l l|| c | c | c} 
+     \toprule
+    Tokenization  & Vectorization & SVM-Linear & SVM-RBF & NB \\
+
+    \midrule
+    Unigram + Bigram & BoW  & 0.83212      & 0.63148    & 0.84272    \\
+    Unigram + Bigram & TF & \textbf{0.8756}       & \textbf{0.674}     & 0.85372      \\
+    Unigram + Bigram  & TF-IDF  & 0.8742      & 0.65448     & \textbf{0.85476}  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \section{Evaluation of Preliminary Work}
 
@@ -92,11 +121,21 @@ Some challenges in sentiment analysis includes separating irrelevant information
 \small
 
 
-\hspace{\parindent} [1] Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011, June). Learning word vectors for sentiment analysis. In {\it Proceedings of the 49th annual meeting of the association for computational linguistics:  Human language technologies-volume 1} (pp.\ 142-150). Association for Computational Linguistics.\\
+\hspace{\parindent} 
 
-[2] M{\"a}ntyl{\"a, M. V., Graziotin, D., & Kuutila, M. (2018). The evolution of sentiment analysis?A review of research topics, venues, and top cited papers. {\it Computer Science Review, 27}, 16-32.\\
+[1] Howard, J., & Ruder, S. (2018). Universal language model fine-tuning for text classification. arXiv preprint arXiv:1801.06146.
 
-[3] Pang, B., Lee, L., & Vaithyanathan, S. (2002, July). Thumbs up?: sentiment classification using machine learning techniques. In  {\it Proceedings of the ACL-02 conference on Empirical methods in natural language processing-Volume 10} (pp. 79-86). Association for Computational Linguistics.
+[2] Lin, C., & He, Y. (2009, November). Joint sentiment/topic model for sentiment analysis. In {\it Proceedings of the 18th ACM conference on Information and knowledge management} (pp. 375-384). ACM.
+
+[3] Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011, June). Learning word vectors for sentiment analysis. In {\it Proceedings of the 49th annual meeting of the association for computational linguistics:  Human language technologies-volume 1} (pp.\ 142-150). Association for Computational Linguistics.
+
+[4] M{\"a}ntyl{\"a, M. V., Graziotin, D., & Kuutila, M. (2018). The evolution of sentiment analysis?A review of research topics, venues, and top cited papers. {\it Computer Science Review, 27}, 16-32.
+
+[5] Pang, B., Lee, L., & Vaithyanathan, S. (2002, July). Thumbs up?: sentiment classification using machine learning techniques. In  {\it Proceedings of the ACL-02 conference on Empirical methods in natural language processing-Volume 10} (pp. 79-86). Association for Computational Linguistics.
+
+[6] Wang, S., & Manning, C. D. (2012, July). Baselines and bigrams: Simple, good sentiment and topic classification. In {\it  Proceedings of the 50th Annual Meeting of the Association for Computational Linguistics: Short Papers-Volume 2 }(pp. 90-94). Association for Computational Linguistics.
+
+
 
 
 

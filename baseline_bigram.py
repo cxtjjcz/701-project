@@ -33,10 +33,10 @@ def trainNB(train_data, feature_type="bow", ngram_range=(1, 2)):
 	train_count_vect, train_feature_vector = createFeatureVec(train_data, ngram_range, feature_type)
 	clf = MultinomialNB().fit(train_feature_vector, train_data.target)
 	train_error = np.mean(clf.predict(train_feature_vector) == train_data.target)
-	return ([train_error, train_count_vect, clf])
+	return ([train_acc, train_count_vect, clf])
 
 
-def testNB(clf, train_count_vect, test_data, feature_type = "bow"):
+def testNB_SVM(clf, train_count_vect, test_data, feature_type = "bow"):
 	test_feature_vector = train_count_vect.transform(test_data.data)
 	if feature_type == "tf":
 		tf_transformer = TfidfTransformer(use_idf=False).fit(test_feature_vector)
@@ -45,16 +45,16 @@ def testNB(clf, train_count_vect, test_data, feature_type = "bow"):
 		tfidf_transformer = TfidfTransformer()
 		test_feature_vector = tfidf_transformer.fit_transform(test_feature_vector)
 
-	test_error = np.mean(clf.predict(test_feature_vector) == test_data.target)
+	test_acc = np.mean(clf.predict(test_feature_vector) == test_data.target)
 	return test_error
 
 def trainSVM(train_data, feature_type="bow", ngram_range=(1, 2)):
 	train_count_vect, train_feature_vector = createFeatureVec(train_data, ngram_range, feature_type)
-	print("enter")
-	clf = SVC(kernel="linear").fit(train_feature_vector, train_data.target)
+	# clf = SVC(kernel="linear").fit(train_feature_vector, train_data.target)
+	clf = SVC(kernel="rbf").fit(train_feature_vector, train_data.target)
 	print(clf.predict(train_feature_vector))
-	train_error = np.mean(clf.predict(train_feature_vector) == train_data.target)
-	return ([train_error, train_count_vect, clf])
+	train_acc = np.mean(clf.predict(train_feature_vector) == train_data.target)
+	return ([train_acc, train_count_vect, clf])
 
 
 #uncomment lines below
@@ -71,13 +71,13 @@ feature_type = "bow"
 ngram_range = (1, 2)
 
 train_data, test_data = readData("")
-# train_error, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
-# test_error = testNB(clf, train_count_vect, test_data, feature_type)
+# train_acc, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
+# test_acc = testNB(clf, train_count_vect, test_data, feature_type)
 
-train_error_svm, train_count_vect_error, clf_svm = trainSVM(train_data, feature_type, ngram_range)
-test_error_svm = testNB(clf_svm, train_count_vect_error, test_data, feature_type)
-print("SVM Training Error:", train_error_svm, "\nTesting Error", test_error_svm)
-# print("Training Error:", train_error,"\nTesting Error",test_error)
+train_acc_svm, train_count_vect_error, clf_svm = trainSVM(train_data, feature_type, ngram_range)
+test_acc_svm = testNB_SVM(clf_svm, train_count_vect_error, test_data, feature_type)
+print("SVM Training Accuracy:", train_acc_svm, "\nTesting Accuracy", test_acc_svm)
+# print("Training Accuracy:", train_acc,"\nTesting Accuracy",test_acc)
 
 
 
