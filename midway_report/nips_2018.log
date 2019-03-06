@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.6.25)  5 MAR 2019 16:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.6.25)  6 MAR 2019 13:20
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -25,13 +25,6 @@ File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
 )
 
 ! LaTeX Error: File `neurips_2018.sty' not found.
-
-Type X to quit or <RETURN> to proceed,
-or enter new name. (Default extension: sty)
-
-Enter file name: s
-
-! LaTeX Error: File `s.sty' not found.
 
 Type X to quit or <RETURN> to proceed,
 or enter new name. (Default extension: sty)
@@ -295,58 +288,58 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) [1
 
 {/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2]
-./nips_2018.tex:126: Misplaced alignment tab character &.
-l.126 [1] Howard, J., &
+./nips_2018.tex:132: Misplaced alignment tab character &.
+l.132 [1] Howard, J., &
                         Ruder, S. (2018). Universal language model fine-tuni...
 
 ? 
-./nips_2018.tex:128: Misplaced alignment tab character &.
-l.128 [2] Lin, C., &
+./nips_2018.tex:134: Misplaced alignment tab character &.
+l.134 [2] Lin, C., &
                      He, Y. (2009, November). Joint sentiment/topic model fo...
 
 ? 
-./nips_2018.tex:130: Misplaced alignment tab character &.
-l.130 ... E., Pham, P. T., Huang, D., Ng, A. Y., &
+./nips_2018.tex:136: Misplaced alignment tab character &.
+l.136 ... E., Pham, P. T., Huang, D., Ng, A. Y., &
                                                    Potts, C. (2011, June). L...
 
 ? 
-./nips_2018.tex:132: Misplaced alignment tab character &.
-l.132 [4] M{\"a}ntyl{\"a, M. V., Graziotin, D., &
+./nips_2018.tex:138: Misplaced alignment tab character &.
+l.138 [4] M{\"a}ntyl{\"a, M. V., Graziotin, D., &
                                                   Kuutila, M. (2018). The ev...
 
 ? 
-./nips_2018.tex:134: Misplaced alignment tab character &.
-l.134 [5] Pang, B., Lee, L., &
+./nips_2018.tex:140: Misplaced alignment tab character &.
+l.140 [5] Pang, B., Lee, L., &
                                Vaithyanathan, S. (2002, July). Thumbs up?: s...
 
 ? 
-./nips_2018.tex:136: Misplaced alignment tab character &.
-l.136 [6] Wang, S., &
+./nips_2018.tex:144: Misplaced alignment tab character &.
+l.144 [7] Wang, S., &
                       Manning, C. D. (2012, July). Baselines and bigrams: Si...
 
 ? 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 142.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 148.
 [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 142.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 148.
  (./nips_2018.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 142.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 142.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 148.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 148.
 Package rerunfilecheck Info: File `nips_2018.out' has not changed.
 (rerunfilecheck)             Checksum: FAE1E074635FACC218A9ECC0EDF6C3B3;368.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 142.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 148.
  )
 (\end occurred inside a group at level 1)
 
-### simple group (level 1) entered at line 132 ({)
+### simple group (level 1) entered at line 138 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 6281 strings out of 492646
- 98423 string characters out of 6129563
- 218013 words of memory out of 5000000
- 10033 multiletter control sequences out of 15000+600000
- 18645 words of font info for 87 fonts, out of 8000000 for 9000
+ 6295 strings out of 492646
+ 98585 string characters out of 6129563
+ 218005 words of memory out of 5000000
+ 10035 multiletter control sequences out of 15000+600000
+ 19925 words of font info for 94 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 31i,7n,38p,877b,343s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 31i,7n,38p,1019b,343s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/cm-super/cm
 -super-t1.enc}</usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/s
 fbx1000.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfb
@@ -355,10 +348,11 @@ x1440.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm0
 0.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1200.
 pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pf
 b></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfti0900.pfb>
-Output written on nips_2018.pdf (3 pages, 141900 bytes).
+</usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb>
+Output written on nips_2018.pdf (3 pages, 156898 bytes).
 PDF statistics:
- 84 PDF objects out of 1000 (max. 8388607)
- 71 compressed objects within 1 object stream
+ 89 PDF objects out of 1000 (max. 8388607)
+ 75 compressed objects within 1 object stream
  13 named destinations out of 1000 (max. 500000)
- 17977 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 20025 words of extra memory for PDF output out of 20736 (max. 10000000)
 
