@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.6.25)  6 MAR 2019 13:20
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.6.25)  7 MAR 2019 11:17
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -41,6 +41,73 @@ Package: fontenc 2017/04/05 v2.0i Standard LaTeX package
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/t1enc.def
 File: t1enc.def 2017/04/05 v2.0i Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
+))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip10
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2016/04/27 v1.618033 publication quality tables
+\heavyrulewidth=\dimen103
+\lightrulewidth=\dimen104
+\cmidrulewidth=\dimen105
+\belowrulesep=\dimen106
+\belowbottomsep=\dimen107
+\aboverulesep=\dimen108
+\abovetopsep=\dimen109
+\cmidrulesep=\dimen110
+\cmidrulekern=\dimen111
+\defaultaddspace=\dimen112
+\@cmidla=\count88
+\@cmidlb=\count89
+\@aboverulesep=\dimen113
+\@belowrulesep=\dimen114
+\@thisruleclass=\count90
+\@lastruleclass=\count91
+\@thisrulewidth=\dimen115
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\@emptytoks=\toks16
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/units/nicefrac.sty
+Package: nicefrac 1998/08/04 v0.9b Nice fractions
+\L@UnitsRaiseDisplaystyle=\skip43
+\L@UnitsRaiseTextstyle=\skip44
+\L@UnitsRaiseScriptstyle=\skip45
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/microtype.sty
+Package: microtype 2018/01/14 v2.7a Micro-typographical refinements (RS)
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+)
+\MT@toks=\toks18
+\MT@count=\count92
+LaTeX Info: Redefining \textls on input line 793.
+\MT@outer@kern=\dimen116
+LaTeX Info: Redefining \textmicrotypecontext on input line 1339.
+\MT@listname@count=\count93
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/microtype-pdftex.def
+File: microtype-pdftex.def 2018/01/14 v2.7a Definitions specific to pdftex (RS)
+
+LaTeX Info: Redefining \lsstyle on input line 913.
+LaTeX Info: Redefining \lslig on input line 913.
+\MT@outer@space=\skip46
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/microtype.cfg
+File: microtype.cfg 2018/01/14 v2.7a microtype main configuration file (RS)
 ))
 (/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/hyperref.sty
 Package: hyperref 2018/02/06 v6.86b Hypertext links for LaTeX
@@ -89,10 +156,6 @@ Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
 Package: refcount 2016/05/16 v3.5 Data extraction from label references (HO)
 Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
 )
-(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/keyval.sty
-Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
-\KV@toks@=\toks16
-)
 (/usr/local/texlive/2018/texmf-dist/tex/generic/ifxetex/ifxetex.sty
 Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
@@ -102,16 +165,16 @@ Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/kvoptions.sty
 Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
 )
-\@linkdim=\dimen103
-\Hy@linkcounter=\count88
-\Hy@pagecounter=\count89
+\@linkdim=\dimen117
+\Hy@linkcounter=\count94
+\Hy@pagecounter=\count95
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2018/02/06 v6.86b Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
 )
-\Hy@SavedSpaceFactor=\count90
+\Hy@SavedSpaceFactor=\count96
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/latexconfig/hyperref.cfg
 File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
@@ -123,17 +186,12 @@ Package hyperref Info: Plain pages OFF on input line 4524.
 Package hyperref Info: Backreferencing OFF on input line 4529.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4762.
-\c@Hy@tempcnt=\count91
-
-(/usr/local/texlive/2018/texmf-dist/tex/latex/url/url.sty
-\Urlmuskip=\muskip10
-Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
-)
+\c@Hy@tempcnt=\count97
 LaTeX Info: Redefining \url on input line 5115.
-\XeTeXLinkMargin=\dimen104
-\Fld@menulength=\count92
-\Field@Width=\dimen105
-\Fld@charsize=\dimen106
+\XeTeXLinkMargin=\dimen118
+\Fld@menulength=\count98
+\Field@Width=\dimen119
+\Fld@charsize=\dimen120
 Package hyperref Info: Hyper figures OFF on input line 6369.
 Package hyperref Info: Link nesting OFF on input line 6374.
 Package hyperref Info: Hyper index ON on input line 6377.
@@ -143,119 +201,55 @@ Package hyperref Info: Link coloring with OCG OFF on input line 6394.
 Package hyperref Info: PDF/A mode OFF on input line 6399.
 LaTeX Info: Redefining \ref on input line 6439.
 LaTeX Info: Redefining \pageref on input line 6443.
-\Hy@abspage=\count93
-\c@Item=\count94
-\c@Hfootnote=\count95
+\Hy@abspage=\count99
+\c@Item=\count100
+\c@Hfootnote=\count101
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/hpdftex.def
 File: hpdftex.def 2018/02/06 v6.86b Hyperref driver for pdfTeX
-\Fld@listcount=\count96
-\c@bookmark@seq@number=\count97
+\Fld@listcount=\count102
+\c@bookmark@seq@number=\count103
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
 Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 82.
 )
-\Hy@SectionHShift=\skip43
+\Hy@SectionHShift=\skip47
 )
-(/usr/local/texlive/2018/texmf-dist/tex/latex/booktabs/booktabs.sty
-Package: booktabs 2016/04/27 v1.618033 publication quality tables
-\heavyrulewidth=\dimen107
-\lightrulewidth=\dimen108
-\cmidrulewidth=\dimen109
-\belowrulesep=\dimen110
-\belowbottomsep=\dimen111
-\aboverulesep=\dimen112
-\abovetopsep=\dimen113
-\cmidrulesep=\dimen114
-\cmidrulekern=\dimen115
-\defaultaddspace=\dimen116
-\@cmidla=\count98
-\@cmidlb=\count99
-\@aboverulesep=\dimen117
-\@belowrulesep=\dimen118
-\@thisruleclass=\count100
-\@lastruleclass=\count101
-\@thisrulewidth=\dimen119
-)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/amsfonts.sty
-Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
-\@emptytoks=\toks17
-\symAMSa=\mathgroup4
-\symAMSb=\mathgroup5
-LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
-(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
-)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/units/nicefrac.sty
-Package: nicefrac 1998/08/04 v0.9b Nice fractions
-\L@UnitsRaiseDisplaystyle=\skip44
-\L@UnitsRaiseTextstyle=\skip45
-\L@UnitsRaiseScriptstyle=\skip46
 
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ifthen.sty
-Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
-))
-(/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/microtype.sty
-Package: microtype 2018/01/14 v2.7a Micro-typographical refinements (RS)
-\MT@toks=\toks18
-\MT@count=\count102
-LaTeX Info: Redefining \textls on input line 793.
-\MT@outer@kern=\dimen120
-LaTeX Info: Redefining \textmicrotypecontext on input line 1339.
-\MT@listname@count=\count103
+./nips_2018.tex:28: Package hyperref Error: This color specification is not sup
+ported
+(hyperref)                without package `xcolor' in
+(hyperref)                `linkbordercolor=green'.
 
-(/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/microtype-pdftex.def
-File: microtype-pdftex.def 2018/01/14 v2.7a Definitions specific to pdftex (RS)
-
-LaTeX Info: Redefining \lsstyle on input line 913.
-LaTeX Info: Redefining \lslig on input line 913.
-\MT@outer@space=\skip47
-)
-Package microtype Info: Loading configuration file microtype.cfg.
-
-(/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/microtype.cfg
-File: microtype.cfg 2018/01/14 v2.7a microtype main configuration file (RS)
-))
+See the hyperref package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.28 \hypersetup{linkbordercolor=green}
+                                       
+? 
 (./nips_2018.aux)
 \openout1 = `nips_2018.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 62.
-LaTeX Font Info:    ... okay on input line 62.
-\AtBeginShipoutBox=\box26
-Package hyperref Info: Link coloring OFF on input line 62.
-
-(/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/nameref.sty
-Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
-
-(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
-Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
-)
-\c@section@level=\count104
-)
-LaTeX Info: Redefining \ref on input line 62.
-LaTeX Info: Redefining \pageref on input line 62.
-LaTeX Info: Redefining \nameref on input line 62.
-
-(./nips_2018.out) (./nips_2018.out)
-\@outlinefile=\write3
-\openout3 = `nips_2018.out'.
-
-LaTeX Info: Redefining \microtypecontext on input line 62.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 63.
+LaTeX Font Info:    ... okay on input line 63.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 63.
+LaTeX Font Info:    ... okay on input line 63.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 63.
+LaTeX Font Info:    ... okay on input line 63.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 63.
+LaTeX Font Info:    ... okay on input line 63.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 63.
+LaTeX Font Info:    ... okay on input line 63.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 63.
+LaTeX Font Info:    ... okay on input line 63.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 63.
+LaTeX Font Info:    ... okay on input line 63.
+LaTeX Info: Redefining \microtypecontext on input line 63.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -270,7 +264,26 @@ Package microtype Info: No adjustment of character kerning.
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msa on input line 66.
+\AtBeginShipoutBox=\box26
+Package hyperref Info: Link coloring OFF on input line 63.
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
+
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
+Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
+)
+\c@section@level=\count104
+)
+LaTeX Info: Redefining \ref on input line 63.
+LaTeX Info: Redefining \pageref on input line 63.
+LaTeX Info: Redefining \nameref on input line 63.
+
+(./nips_2018.out) (./nips_2018.out)
+\@outlinefile=\write3
+\openout3 = `nips_2018.out'.
+
+LaTeX Font Info:    Try loading font information for U+msa on input line 67.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -278,7 +291,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 66.
+LaTeX Font Info:    Try loading font information for U+msb on input line 67.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -288,71 +301,77 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) [1
 
 {/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2]
+./nips_2018.tex:130: Misplaced alignment tab character &.
+l.130 \bibitem{Ficamos} Ficamos, P., &
+                                       Liu, Y. (2016). A topic based approac...
+
+? 
+./nips_2018.tex:131: Misplaced alignment tab character &.
+l.131 \bibitem{Howard} Howard, J., &
+                                     Ruder, S. (2018). Universal language mo...
+
+? 
 ./nips_2018.tex:132: Misplaced alignment tab character &.
-l.132 [1] Howard, J., &
-                        Ruder, S. (2018). Universal language model fine-tuni...
+l.132 \bibitem{Lin} Lin, C., &
+                               He, Y. (2009, November). Joint sentiment/topi...
 
 ? 
-./nips_2018.tex:134: Misplaced alignment tab character &.
-l.134 [2] Lin, C., &
-                     He, Y. (2009, November). Joint sentiment/topic model fo...
-
-? 
-./nips_2018.tex:136: Misplaced alignment tab character &.
-l.136 ... E., Pham, P. T., Huang, D., Ng, A. Y., &
+./nips_2018.tex:133: Misplaced alignment tab character &.
+l.133 ... E., Pham, P. T., Huang, D., Ng, A. Y., &
                                                    Potts, C. (2011, June). L...
 
 ? 
-./nips_2018.tex:138: Misplaced alignment tab character &.
-l.138 [4] M{\"a}ntyl{\"a, M. V., Graziotin, D., &
-                                                  Kuutila, M. (2018). The ev...
+./nips_2018.tex:134: Misplaced alignment tab character &.
+l.134 ...} M{\"a}ntyl{\"a, M. V., Graziotin, D., &
+                                                   Kuutila, M. (2018). The e...
 
 ? 
-./nips_2018.tex:140: Misplaced alignment tab character &.
-l.140 [5] Pang, B., Lee, L., &
-                               Vaithyanathan, S. (2002, July). Thumbs up?: s...
-
-? 
-./nips_2018.tex:144: Misplaced alignment tab character &.
-l.144 [7] Wang, S., &
-                      Manning, C. D. (2012, July). Baselines and bigrams: Si...
-
-? 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 148.
 [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 148.
+./nips_2018.tex:135: Misplaced alignment tab character &.
+l.135 \bibitem{Pang} Pang, B., Lee, L., &
+                                          Vaithyanathan, S. (2002, July). Th...
+
+? 
+./nips_2018.tex:137: Misplaced alignment tab character &.
+l.137 \bibitem{Wang} Wang, S., &
+                                 Manning, C. D. (2012, July). Baselines and ...
+
+? 
+./nips_2018.tex:141: Missing } inserted.
+<inserted text> 
+                }
+l.141 \end{thebibliography}
+                           
+? 
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 143.
+[4]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 143.
  (./nips_2018.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 148.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 148.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 143.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 143.
 Package rerunfilecheck Info: File `nips_2018.out' has not changed.
 (rerunfilecheck)             Checksum: FAE1E074635FACC218A9ECC0EDF6C3B3;368.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 148.
- )
-(\end occurred inside a group at level 1)
-
-### simple group (level 1) entered at line 138 ({)
-### bottom level 
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 143.
+ ) 
 Here is how much of TeX's memory you used:
- 6295 strings out of 492646
- 98585 string characters out of 6129563
- 218005 words of memory out of 5000000
- 10035 multiletter control sequences out of 15000+600000
- 19925 words of font info for 94 fonts, out of 8000000 for 9000
+ 6300 strings out of 492646
+ 98589 string characters out of 6129563
+ 219150 words of memory out of 5000000
+ 10039 multiletter control sequences out of 15000+600000
+ 18101 words of font info for 89 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 31i,7n,38p,1019b,343s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/cm-super/cm
--super-t1.enc}</usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/s
-fbx1000.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfb
-x1440.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm0
-900.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm100
-0.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1200.
-pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pf
-b></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfti0900.pfb>
-</usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb>
-Output written on nips_2018.pdf (3 pages, 156898 bytes).
+ 31i,7n,38p,1186b,449s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
+</usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></
+usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></us
+r/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/
+local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/lo
+cal/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/loca
+l/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb>
+Output written on nips_2018.pdf (4 pages, 121145 bytes).
 PDF statistics:
- 89 PDF objects out of 1000 (max. 8388607)
- 75 compressed objects within 1 object stream
- 13 named destinations out of 1000 (max. 500000)
- 20025 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 106 PDF objects out of 1000 (max. 8388607)
+ 93 compressed objects within 1 object stream
+ 22 named destinations out of 1000 (max. 500000)
+ 15929 words of extra memory for PDF output out of 17280 (max. 10000000)
 
