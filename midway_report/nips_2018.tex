@@ -101,18 +101,18 @@ The combination of different vectorization methods and classifiers, as well as t
    \centering
   \begin{tabular}{ l l|| c | c | c} 
      \toprule
-    Tokenization  & Vectorization & SVM-Linear & SVM-RBF & NB \\
+    Tokenization  & Vectorization & NB & SVM-Linear & SVM-RBF  \\
 
     \midrule
-    Unigram  & BoW  & 0.83212      & -    & 0.81968    \\
-    Unigram + Bigram & BoW & 0.87504       & 0.63148     & 0.84272      \\
-    Unigram + Bigram + Trigram & BoW  & 0.83212      & -     & 0.84476  \\
-    Unigram  & TF  & 0.87560      & -    & 0.84308    \\
-    Unigram + Bigram & TF & 0.88060       & 0.67400     & 0.85372      \\
-    Unigram + Bigram + Trigram & TF  & 0.88092     & -     & 0.85336  \\
-    Unigram  & TF-IDF  & 0.87240      & -    & 0.83128    \\
-    Unigram + Bigram & TF-IDF & 0.88584       & 0.65448     & 0.85476      \\
-    Unigram + Bigram + Trigram & TF-IDF  & 0.88532     & -     & 0.85724  \\
+    Unigram  & BoW  & 0.81968   & 0.83212      & -        \\
+    Uni + Bi & BoW  & 0.84272    & 0.87504       & 0.63148          \\
+    Uni + Bi + Tri & BoW  & 0.84476  & 0.83212      & -       \\
+    Unigram  & TF  & 0.84308    & 0.87560      & -    \\
+    Uni + Bi & TF & 0.85372     & 0.88060       & 0.67400      \\
+    Uni + Bi + Tri & TF  & 0.85336  & 0.88092     & -     \\
+    Unigram  & TF-IDF  & 0.83128    & 0.87240      & -    \\
+    Uni + Bi & TF-IDF  & 0.85476      & 0.88584       & 0.65448    \\
+    Uni + Bi + Tri & TF-IDF   & 0.85724  & 0.88532     & -    \\
     \bottomrule
   \end{tabular}
    \caption{Baseline Models and Test Accuracy}\label{tab:a}
