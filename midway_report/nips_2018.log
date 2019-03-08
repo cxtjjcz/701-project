@@ -1,11 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.6.25)  7 MAR 2019 11:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  8 MAR 2019 16:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
 **nips_2018.tex
 (./nips_2018.tex
-LaTeX2e <2018-04-01> patch level 5
+LaTeX2e <2018-04-01> patch level 2
+Babel <3.18> and hyphenation patterns for 84 language(s) loaded.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/size10.clo
@@ -219,8 +220,28 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip47
 )
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
 
-./nips_2018.tex:28: Package hyperref Error: This color specification is not sup
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 99.
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen121
+\Gin@req@width=\dimen122
+)
+
+./nips_2018.tex:29: Package hyperref Error: This color specification is not sup
 ported
 (hyperref)                without package `xcolor' in
 (hyperref)                `linkbordercolor=green'.
@@ -229,27 +250,27 @@ See the hyperref package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.28 \hypersetup{linkbordercolor=green}
+l.29 \hypersetup{linkbordercolor=green}
                                        
 ? 
 (./nips_2018.aux)
 \openout1 = `nips_2018.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Info: Redefining \microtypecontext on input line 63.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 64.
+LaTeX Font Info:    ... okay on input line 64.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 64.
+LaTeX Font Info:    ... okay on input line 64.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 64.
+LaTeX Font Info:    ... okay on input line 64.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 64.
+LaTeX Font Info:    ... okay on input line 64.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 64.
+LaTeX Font Info:    ... okay on input line 64.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 64.
+LaTeX Font Info:    ... okay on input line 64.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 64.
+LaTeX Font Info:    ... okay on input line 64.
+LaTeX Info: Redefining \microtypecontext on input line 64.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -265,7 +286,7 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman
 (RS)
 )
 \AtBeginShipoutBox=\box26
-Package hyperref Info: Link coloring OFF on input line 63.
+Package hyperref Info: Link coloring OFF on input line 64.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -275,15 +296,46 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count104
 )
-LaTeX Info: Redefining \ref on input line 63.
-LaTeX Info: Redefining \pageref on input line 63.
-LaTeX Info: Redefining \nameref on input line 63.
+LaTeX Info: Redefining \ref on input line 64.
+LaTeX Info: Redefining \pageref on input line 64.
+LaTeX Info: Redefining \nameref on input line 64.
 
 (./nips_2018.out) (./nips_2018.out)
 \@outlinefile=\write3
 \openout3 = `nips_2018.out'.
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 67.
+
+(/usr/local/texlive/2018/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count105
+\scratchdimen=\dimen123
+\scratchbox=\box27
+\nofMPsegments=\count106
+\nofMParguments=\count107
+\everyMPshowfont=\toks19
+\MPscratchCnt=\count108
+\MPscratchDim=\dimen124
+\MPnumerator=\count109
+\makeMPintoPDFobject=\count110
+\everyMPtoPDFconversion=\toks20
+) (/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+LaTeX Font Info:    Try loading font information for U+msa on input line 68.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -291,7 +343,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 67.
+LaTeX Font Info:    Try loading font information for U+msb on input line 68.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -300,78 +352,101 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) [1
 
-{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2]
-./nips_2018.tex:130: Misplaced alignment tab character &.
-l.130 \bibitem{Ficamos} Ficamos, P., &
+{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+Overfull \hbox (41.94846pt too wide) in paragraph at lines 102--118
+ [][] 
+ []
+
+[2]
+<nb.png, id=69, 789.95125pt x 592.2125pt>
+File: nb.png Graphic file (type png)
+<use nb.png>
+Package pdftex.def Info: nb.png  used on input line 123.
+(pdftex.def)             Requested size: 173.78981pt x 130.28714pt.
+<svm.png, id=71, 789.95125pt x 592.2125pt>
+File: svm.png Graphic file (type png)
+<use svm.png>
+Package pdftex.def Info: svm.png  used on input line 124.
+(pdftex.def)             Requested size: 173.78981pt x 130.28714pt.
+
+Overfull \hbox (4.8013pt too wide) in paragraph at lines 123--125
+[][] [] 
+ []
+
+[3 <./nb.png> <./svm.png>]
+./nips_2018.tex:163: Misplaced alignment tab character &.
+l.163 \bibitem{Ficamos} Ficamos, P., &
                                        Liu, Y. (2016). A topic based approac...
 
 ? 
-./nips_2018.tex:131: Misplaced alignment tab character &.
-l.131 \bibitem{Howard} Howard, J., &
+./nips_2018.tex:164: Misplaced alignment tab character &.
+l.164 \bibitem{Howard} Howard, J., &
                                      Ruder, S. (2018). Universal language mo...
 
 ? 
-./nips_2018.tex:132: Misplaced alignment tab character &.
-l.132 \bibitem{Lin} Lin, C., &
+./nips_2018.tex:165: Misplaced alignment tab character &.
+l.165 \bibitem{Lin} Lin, C., &
                                He, Y. (2009, November). Joint sentiment/topi...
 
 ? 
-./nips_2018.tex:133: Misplaced alignment tab character &.
-l.133 ... E., Pham, P. T., Huang, D., Ng, A. Y., &
+./nips_2018.tex:166: Misplaced alignment tab character &.
+l.166 ... E., Pham, P. T., Huang, D., Ng, A. Y., &
                                                    Potts, C. (2011, June). L...
 
 ? 
-./nips_2018.tex:134: Misplaced alignment tab character &.
-l.134 ...} M{\"a}ntyl{\"a, M. V., Graziotin, D., &
+./nips_2018.tex:167: Misplaced alignment tab character &.
+l.167 ...} M{\"a}ntyl{\"a, M. V., Graziotin, D., &
                                                    Kuutila, M. (2018). The e...
 
 ? 
-[3]
-./nips_2018.tex:135: Misplaced alignment tab character &.
-l.135 \bibitem{Pang} Pang, B., Lee, L., &
+[4]
+./nips_2018.tex:168: Misplaced alignment tab character &.
+l.168 \bibitem{Pang} Pang, B., Lee, L., &
                                           Vaithyanathan, S. (2002, July). Th...
 
 ? 
-./nips_2018.tex:137: Misplaced alignment tab character &.
-l.137 \bibitem{Wang} Wang, S., &
+./nips_2018.tex:170: Misplaced alignment tab character &.
+l.170 \bibitem{Wang} Wang, S., &
                                  Manning, C. D. (2012, July). Baselines and ...
 
 ? 
-./nips_2018.tex:141: Missing } inserted.
+./nips_2018.tex:174: Missing } inserted.
 <inserted text> 
                 }
-l.141 \end{thebibliography}
+l.174 \end{thebibliography}
                            
 ? 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 143.
-[4]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 143.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 176.
+[5]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 176.
  (./nips_2018.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 143.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 143.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 176.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 176.
 Package rerunfilecheck Info: File `nips_2018.out' has not changed.
 (rerunfilecheck)             Checksum: FAE1E074635FACC218A9ECC0EDF6C3B3;368.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 143.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 176.
  ) 
 Here is how much of TeX's memory you used:
- 6300 strings out of 492646
- 98589 string characters out of 6129563
- 219150 words of memory out of 5000000
- 10039 multiletter control sequences out of 15000+600000
+ 7080 strings out of 492649
+ 109569 string characters out of 6129622
+ 230081 words of memory out of 5000000
+ 10780 multiletter control sequences out of 15000+600000
  18101 words of font info for 89 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  31i,7n,38p,1186b,449s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
-</usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></
-usr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></us
-r/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/
-local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/lo
-cal/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/loca
-l/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb>
-Output written on nips_2018.pdf (4 pages, 121145 bytes).
+</usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
+usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></u
+sr/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr
+/local/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/l
+ocal/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/loc
+al/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local
+/texlive/2018/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/t
+exlive/2018/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb>
+Output written on nips_2018.pdf (5 pages, 198703 bytes).
 PDF statistics:
- 106 PDF objects out of 1000 (max. 8388607)
- 93 compressed objects within 1 object stream
- 22 named destinations out of 1000 (max. 500000)
- 15929 words of extra memory for PDF output out of 17280 (max. 10000000)
+ 126 PDF objects out of 1000 (max. 8388607)
+ 105 compressed objects within 2 object streams
+ 24 named destinations out of 1000 (max. 500000)
+ 15939 words of extra memory for PDF output out of 17280 (max. 10000000)
 

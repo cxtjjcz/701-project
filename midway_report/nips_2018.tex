@@ -25,6 +25,7 @@
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
 \usepackage{hyperref} % <====================== last packge to be called
+\usepackage{graphicx}
 \hypersetup{linkbordercolor=green}
 
 \title{Sentiment Analysis for Movie Reviews}
@@ -94,22 +95,36 @@ Currently, most existing works mainly focused on testing various classifiers on 
 
 \section{Preliminary Results}
 
+The combination of different vectorization methods and classifiers, as well as their respective testing prediction accuracies are given in Table~\ref{tab:a} and Figure~$\ref{fig:a}$.
+
 \begin{table}[h]
-  \caption{Baseline Models and Test Accuracy}\label{tab:a}
-  \centering
+   \centering
   \begin{tabular}{ l l|| c | c | c} 
      \toprule
     Tokenization  & Vectorization & SVM-Linear & SVM-RBF & NB \\
 
     \midrule
-    Unigram + Bigram & BoW  & 0.83212      & 0.63148    & 0.84272    \\
-    Unigram + Bigram & TF & \textbf{0.8756}       & \textbf{0.674}     & 0.85372      \\
-    Unigram + Bigram  & TF-IDF  & 0.8742      & 0.65448     & \textbf{0.85476}  \\
+    Unigram  & BoW  & 0.83212      & -    & 0.81968    \\
+    Unigram + Bigram & BoW & 0.87504       & 0.63148     & 0.84272      \\
+    Unigram + Bigram + Trigram & BoW  & 0.83212      & -     & 0.84476  \\
+    Unigram  & TF  & 0.87560      & -    & 0.84308    \\
+    Unigram + Bigram & TF & 0.88060       & 0.67400     & 0.85372      \\
+    Unigram + Bigram + Trigram & TF  & 0.88092     & -     & 0.85336  \\
+    Unigram  & TF-IDF  & 0.87240      & -    & 0.83128    \\
+    Unigram + Bigram & TF-IDF & 0.88584       & 0.65448     & 0.85476      \\
+    Unigram + Bigram + Trigram & TF-IDF  & 0.88532     & -     & 0.85724  \\
     \bottomrule
   \end{tabular}
+   \caption{Baseline Models and Test Accuracy}\label{tab:a}
 \end{table}
 
-The combination of different vectorization methods and classifiers, as well as their respective testing prediction accuracies was given in Table~\ref{tab:a}.
+\newpage
+\begin{figure}[h!]
+\includegraphics[scale=0.22]{nb.png}
+\includegraphics[scale=0.22]{svm.png}
+\caption{Baseline Models and Test Accuracy}
+\label{fig:a}
+\end{figure}
 
 
 \section{Evaluation of Preliminary Work}
@@ -125,6 +140,24 @@ In our future work, we hope to first explore feature vectors with richer informa
 
 
 \section{Teammates and Work Division}
+
+ We expect projects done in a group to be more substantial than projects done individually. You should outline what everybody in your group will do and by when each task should be complete.\\
+\noindent \textbf{March 11th to March 24th (Feature Vector Improvement)} \\
+$\bullet$ More research on ways to improve feature vectors, with a focus on lexical polarity and part of speech tag (Xiangting Chen, Shiqi Xiao) \\
+$\bullet$ Test the new feature vectors on the classifier (Linhong Li, Jiachen Ning)\\
+$\bullet$  Based on the results from the new feature vectors, make modifications accordingly (All)\\
+\textbf{March 25th to April 7th (Topic Modelling)}\\
+$\bullet$  Explore topic modelling to identify latent topics (Linhong Li, Jiachen Ning)\\
+$\bullet$  Train the classifier and find explanations on why or why not the topic modelling works (Xiangting Chen, Shiqi Xiao) \\
+$\bullet$  Start writing final report (All)\\
+\textbf{April 8th to April 16th (Poster Preparation)}\\
+$\bullet$  Prepare content for the poster (Xiangting Chen, Linhong Li) \\
+$\bullet$ Draw result graphs for the poster (Jiachen Ning, Shiqi Xiao) \\
+$\bullet$  Create the poster and identify the most important finding from our research project. (All) \\
+$\bullet$ Prepare the information we need to convey during the talk that will complement our poster. (All)\\
+\textbf{April 17th to May 1st (Final Report)}\\
+$\bullet$  Summarize previous results and write the final report (All) 
+$\bullet$ Final modification of final report based on the feedbacks from the poster session. (All)
 
 \begin{thebibliography}{99}
 \bibitem{Ficamos} Ficamos, P., & Liu, Y. (2016). A topic based approach for sentiment analysis on Twitter data. {\it International Journal of Advanced Computer Science and Applications, 7(12)}, 201-205.
