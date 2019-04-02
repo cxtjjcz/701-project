@@ -36,8 +36,10 @@ parser.add_argument('--num_top_topics', default = 5, type = int)
 #with unigram + bigram: training acc = 0.9844; test acc = 0.85476
 
 # TODO:
-# 1. Optimize topic model to extract more meaningful topics, consider doing cross validation
-#    to select the optimal number of topics/classifiers being used later on
+# 1. Optimize topic model to extract more meaningful topics
+# 2. Finish all experiments (currently unigram + tf + LDA is the only combo tested)
+# 3. Do cross validation on (1) num_topic; (2) num_top_topics
+# 4. Plot correlation between sum(mask) and clf (training acc) -- don't seem to correlate currently
 
 ################################################################################
 
@@ -151,6 +153,9 @@ def train_main(args, doc_clf_mask, train_data, train_feature_vector):
 	# feature_vector: np.array
 	for clf_i in range(num_topics):
 		curr_mask = (doc_clf_mask[:, clf_i]).astype(bool)
+
+		print(sum(curr_mask))
+
 		curr_X = train_feature_vector[curr_mask]
 		curr_Y = np.array(train_data.target)[curr_mask]
 		curr_clf = MultinomialNB().fit(curr_X, curr_Y)
