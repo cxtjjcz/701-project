@@ -24,7 +24,7 @@ parser.add_argument('--ngram', default = 2, type = str, help = 'Specify ngram ra
 parser.add_argument('--topic', default = 'LDA', type = str, help = 'Specify topic model type.')
 parser.add_argument('--clf', default = 'NB', type = str, help = 'Specify choice of classifier.')
 parser.add_argument('--num_feat', default = 1000, type = int)
-parser.add_argument('--num_topic', default = 10, type = int)
+parser.add_argument('--num_topic', default = 20, type = int)
 parser.add_argument('--display_topics', default = False, type = bool)
 parser.add_argument('--num_top_topics', default = 5, type = int) 
 # An example is contained in the training sets of its top-5 most relevant topic-specific classifiers
@@ -74,6 +74,7 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 		tf = tf_vectorizer.fit_transform(dataset.data)
 		tf_feature_names = tf_vectorizer.get_feature_names()
 		vectors, features = (tf, tf_feature_names)
+		vectorizer = tf_vectorizer
 
 	if topic == 'NMF':
 		assert(feature_type == 'tf_idf')
@@ -81,8 +82,9 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 		tfidf = tfidf_vectorizer.fit_transform(dataset.data)
 		tfidf_feature_names = tfidf_vectorizer.get_feature_names() # words whose frequency 'matters'
 		vectors, features = (tfidf, tfidf_feature_names)
+		vectorizer = tfidf_vectorizer
 
-	return vectors, features
+	return vectors, features, vectorizer
 
 def trainNB(train_data, feature_type="bow", ngram_range=(1, 2)):
 	# default is unigram + bigram and with stop words removed
@@ -114,16 +116,16 @@ def trainSVM(train_data, feature_type="bow", ngram_range=(1, 2)):
 
 def createTopicModel(dataset, feature_type, ngram_range, num_feat, topic, num_topic):
 	# get document-word matrix (vectors) and total words (features)
-	vectors, features = createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic)
+	vectors, features, vectorizer = createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic)
 	# run topic model
 	if topic == 'LDA':
 		topic_model = LatentDirichletAllocation(n_components=num_topic, max_iter=5, learning_method='online', \
-												learning_offset=50., random_state=0, learning_decay=0.7).fit(vectors)
+												learning_offset=50., random_state=0).fit(vectors)
 	if topic == 'NMF':
 		topic_model = NMF(n_components=no_topics, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(vectors)
 		# 'nndsvd' initialization helps with convergence
 	# topic_model = document-topic matrix + topic-word matrix (decomposition of a doc-word matrix)
-	return topic_model, features, vectors
+	return topic_model, features, vectors, vectorizer
 
 def split_by_topic(args, topic_model, train_X):
 	'''
@@ -145,6 +147,17 @@ def split_by_topic(args, topic_model, train_X):
 			doc_clf_mask[doc_i, i] = 1
 
 	return doc_clf_mask
+
+def standardize_topic_distr(doc_topic_distr):
+	'''
+	This function takes into consideration infrequent topics. The document-topic matrix
+	is normalized vertically such that each entry represents the z-score within topic.
+
+	'''
+	means = np.mean(doc_topic_distr, axis = 0)
+	stds = np.std(doc_topic_distr, axis = 0)
+	eps = 1e-05
+	return (doc_topic_distr - means) / (stds + eps)
 
 def train_main(args, doc_clf_mask, train_data, train_feature_vector, classifier, kernel=None):
 	'''
@@ -177,7 +190,7 @@ def train_main(args, doc_clf_mask, train_data, train_feature_vector, classifier,
 	return clfs
 
 def GridSearch(vectors):
-	search_params = {'n_components': [10, 20, 30], 'learning_decay': [.5, .7, .9]}
+	search_params = {'n_components': [10, 20, 25, 30], 'learning_decay': [.5, .7, .9]}
 	lda = LatentDirichletAllocation()
 	model = GridSearchCV(lda, param_grid=search_params)
 	model.fit(vectors)
@@ -185,8 +198,8 @@ def GridSearch(vectors):
 	print("Best Model's Params: ", model.best_params_)
 	print("Best Log Likelihood Score: ", model.best_score_)
 	print("Model Perplexity: ", best_lda_model.perplexity(vectors))
-	n_topics = [10, 15, 20, 25, 30]
-	log_likelyhoods_5 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.5]
+	n_topics = [10, 20, 25, 30]
+	'''log_likelyhoods_5 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.5]
 	log_likelyhoods_7 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.7]
 	log_likelyhoods_9 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.9]
 
@@ -198,8 +211,21 @@ def GridSearch(vectors):
 	plt.xlabel("Num Topics")
 	plt.ylabel("Log Likelyhood Scores")
 	plt.legend(title='Learning decay', loc='best')
-	plt.show()
+	plt.show()'''
 
+def test_main(clfs, test_vectors, topic_model, test_labels):
+	doc_topic_distr = topic_model.transform(test_vectors)
+	#standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
+	#doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
+
+	all_preds = np.zeros((test_vectors.shape[0], len(clfs)))
+	for clf_i, clf in enumerate(clfs):
+		all_preds[:, clf_i] = clf.predict(test_vectors)
+
+	weighted_preds = (np.sum(doc_topic_distr * all_preds, axis = 1) > 0.5).astype(int)
+	print(weighted_preds)
+	test_acc = np.mean(weighted_preds == test_labels)
+	print(test_acc)
 
 def main():
 	args = parser.parse_args()
@@ -210,14 +236,14 @@ def main():
 	ngram_range = (1, args.ngram)
 
 	print('Creating topic model for the corpus...')
-	topic_model, features, vectors = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
-	'''if args.topic == "LDA":
+	topic_model, features, vectors, vectorizer = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
+	if args.topic == "LDA":
 		# Log likelihood: higher the better
 		print("Log likelihood: ", topic_model.score(vectors))
 		# Perplexity: lower the better
 		print("Perplexity: ", topic_model.perplexity(vectors))
 		print(topic_model.get_params())
-		GridSearch(vectors)'''
+		GridSearch(vectors)
 	if args.display_topics: 
 		num_top_words = 10 # display 10 top words from extracted topics
 		display_topics(topic_model, features, num_top_words)
@@ -233,6 +259,10 @@ def main():
 	clfs = train_main(args, doc_clf_mask, train_data, vectors, "SVM", "linear")
 	# SVM rbf
 	clfs = train_main(args, doc_clf_mask, train_data, vectors, "SVM", "rbf")
+
+	print('Testing topic-specific classifiers...')
+	test_vectors = vectorizer.transform(test_data.data)
+	test_main(clfs, test_vectors, topic_model, test_data.target)
 
 	# print('Training model...')
 	# train_acc, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
