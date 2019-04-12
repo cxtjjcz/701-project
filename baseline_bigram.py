@@ -8,6 +8,12 @@ from sklearn.datasets import load_files
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
 from sklearn.decomposition import NMF, LatentDirichletAllocation
+from sklearn.model_selection import GridSearchCV
+
+import pyLDAvis
+import pyLDAvis.sklearn
+import matplotlib.pyplot as plt
+
 import pandas as pd
 
 from utils import *
@@ -18,7 +24,7 @@ parser.add_argument('--ngram', default = 2, type = str, help = 'Specify ngram ra
 parser.add_argument('--topic', default = 'LDA', type = str, help = 'Specify topic model type.')
 parser.add_argument('--clf', default = 'NB', type = str, help = 'Specify choice of classifier.')
 parser.add_argument('--num_feat', default = 1000, type = int)
-parser.add_argument('--num_topic', default = 20, type = int)
+parser.add_argument('--num_topic', default = 10, type = int)
 parser.add_argument('--display_topics', default = False, type = bool)
 parser.add_argument('--num_top_topics', default = 5, type = int) 
 # An example is contained in the training sets of its top-5 most relevant topic-specific classifiers
@@ -111,7 +117,7 @@ def createTopicModel(dataset, feature_type, ngram_range, num_feat, topic, num_to
 	# run topic model
 	if topic == 'LDA':
 		topic_model = LatentDirichletAllocation(n_components=num_topic, max_iter=5, learning_method='online', \
-												learning_offset=50., random_state=0).fit(vectors)
+												learning_offset=50., random_state=0, learning_decay=0.7).fit(vectors)
 	if topic == 'NMF':
 		topic_model = NMF(n_components=no_topics, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(vectors)
 		# 'nndsvd' initialization helps with convergence
@@ -139,7 +145,7 @@ def split_by_topic(args, topic_model, train_X):
 
 	return doc_clf_mask
 
-def train_main(args, doc_clf_mask, train_data, train_feature_vector):
+def train_main(args, doc_clf_mask, train_data, train_feature_vector, classifier, kernel=None):
 	'''
 	Note:
 	- train_data.data is a list of strings
@@ -158,13 +164,41 @@ def train_main(args, doc_clf_mask, train_data, train_feature_vector):
 
 		curr_X = train_feature_vector[curr_mask]
 		curr_Y = np.array(train_data.target)[curr_mask]
-		curr_clf = MultinomialNB().fit(curr_X, curr_Y)
+		if classifier == "NB":
+			curr_clf = MultinomialNB().fit(curr_X, curr_Y)
+		if classifier == "SVM":
+			curr_clf = SVC(kernel=kernel).fit(curr_X, curr_Y)
 		curr_train_acc = np.mean(curr_clf.predict(curr_X) == curr_Y)
 		clfs.append(curr_clf)
 		clf_accs.append(curr_train_acc)
 
 	print(clf_accs) # expect better performance during topic-specific training
 	return clfs
+
+def GridSearch(vectors):
+	search_params = {'n_components': [10, 20, 30], 'learning_decay': [.5, .7, .9]}
+	lda = LatentDirichletAllocation()
+	model = GridSearchCV(lda, param_grid=search_params)
+	model.fit(vectors)
+	best_lda_model = model.best_estimator_
+	print("Best Model's Params: ", model.best_params_)
+	print("Best Log Likelihood Score: ", model.best_score_)
+	print("Model Perplexity: ", best_lda_model.perplexity(vectors))
+	n_topics = [10, 15, 20, 25, 30]
+	log_likelyhoods_5 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.5]
+	log_likelyhoods_7 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.7]
+	log_likelyhoods_9 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.9]
+
+	plt.figure(figsize=(12, 8))
+	plt.plot(n_topics, log_likelyhoods_5, label='0.5')
+	plt.plot(n_topics, log_likelyhoods_7, label='0.7')
+	plt.plot(n_topics, log_likelyhoods_9, label='0.9')
+	plt.title("Choosing Optimal LDA Model")
+	plt.xlabel("Num Topics")
+	plt.ylabel("Log Likelyhood Scores")
+	plt.legend(title='Learning decay', loc='best')
+	plt.show()
+
 
 def main():
 	args = parser.parse_args()
@@ -176,6 +210,13 @@ def main():
 
 	print('Creating topic model for the corpus...')
 	topic_model, features, vectors = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
+	'''if args.topic == "LDA":
+		# Log likelihood: higher the better
+		print("Log likelihood: ", topic_model.score(vectors))
+		# Perplexity: lower the better
+		print("Perplexity: ", topic_model.perplexity(vectors))
+		print(topic_model.get_params())
+		GridSearch(vectors)'''
 	if args.display_topics: 
 		num_top_words = 10 # display 10 top words from extracted topics
 		display_topics(topic_model, features, num_top_words)
@@ -185,7 +226,12 @@ def main():
 	doc_clf_mask = split_by_topic(args, topic_model, vectors)
 
 	print('Training topic-specific classifiers...')
-	clfs = train_main(args, doc_clf_mask, train_data, vectors)
+	# NB
+	clfs = train_main(args, doc_clf_mask, train_data, vectors, "NB")
+	# SVM linear
+	clfs = train_main(args, doc_clf_mask, train_data, vectors, "SVM", "linear")
+	# SVM rbf
+	clfs = train_main(args, doc_clf_mask, train_data, vectors, "SVM", "rbf")
 
 	# print('Training model...')
 	# train_acc, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
