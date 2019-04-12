@@ -12,42 +12,28 @@ import spacy
 # python -m spacy download en
 import json
 
-test_dic = {"0":[["first","document","nsubj"], ["is", "first", "dobj"], ["ss", "ass", "asas"]],
-            "1":[["second","document","xcomp"]],
-            "2":[["one", "document","sat"]],
-            "3":[["this", "is", "sasi"]]}
-
-with open('test_dic.json', 'w') as outfile:  
-    json.dump(test_dic, outfile)
 
 
-with open('test_dic.json') as json_file:  
+with open('train_data.json') as json_file:  
     test_dic = json.load(json_file)
 
+def readData(rootPath):
+    category = ["pos","neg"]
+    #load only labeled data
+    movie_train = load_files(rootPath + "aclImdb/train", shuffle=True, categories=category)
+    movie_test = load_files(rootPath + "aclImdb/test", shuffle=True, categories=category)
+    return [movie_train, movie_test]
 
-corpus = ['This is the first document.',
-'This is the second second document.',
-'And the third one.',
-'Is this the first document?']
+train_data, test_data = readData("")
 
-bigram_vectorizer = CountVectorizer(ngram_range=(1, 2), 
-    token_pattern=r'\b\w+\b', min_df=1)
-# print(bigram_vectorizer)
-
-
-analyze = bigram_vectorizer.build_analyzer()
-
-res = bigram_vectorizer.fit_transform(corpus).toarray()
-# print(res)
-
-
-
+corpus = train_data.data
+corpus = corpus[0:100]
 
 # defines a custom vectorizer class
 class CustomVectorizer(CountVectorizer): 
 
     count = 0
-    
+
     # overwrite the build_analyzer method, allowing one to
     # create a custom analyzer for the vectorizer
     def build_analyzer(self):
@@ -58,6 +44,7 @@ class CustomVectorizer(CountVectorizer):
 
         # create the analyzer that will be returned by this method
         def analyser(doc):
+            doc = doc.decode("utf-8")
 
             # load spaCy's model for english language
             spacy.load('en')
@@ -67,7 +54,6 @@ class CustomVectorizer(CountVectorizer):
             
             # apply the preprocessing and tokenzation steps
             doc_clean = (doc).lower()
-
 
             tokens = lemmatizer(doc_clean)
 
@@ -82,28 +68,28 @@ class CustomVectorizer(CountVectorizer):
 
             count = CustomVectorizer.count
 
-            lst_pair = test_dic[str(count)]
+            # lst_pair = test_dic[str(count)]
 
-            for pair in lst_pair:
-                temp_str = "" + str(pair[0]) + " " + str(pair[1])
-                unigram_bigram.append(temp_str)
+            # for pair in lst_pair:
+            #     temp_str = "" + str(pair[0]) + " " + str(pair[1])
+            #     unigram_bigram.append(temp_str)
 
             CustomVectorizer.count = count + 1
-            print(unigram_bigram)
+
+            progress = count/len(corpus)*100
+            print (progress,"% completed")
+            # print(unigram_bigram)
             return(unigram_bigram)
 
         return(analyser)
     
 
-custom_vec = CustomVectorizer(ngram_range=(1,2),
+custom_vec = CustomVectorizer(ngram_range=(1,3),
                               stop_words='english')
 
 matrix = custom_vec.fit_transform(corpus).toarray()
 name = custom_vec.get_feature_names()
 
-
-print(matrix)
-print(name)
 
 
 
