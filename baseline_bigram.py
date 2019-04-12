@@ -109,7 +109,8 @@ def trainSVM(train_data, feature_type="bow", ngram_range=(1, 2)):
 	clf = SVC(kernel="rbf").fit(train_feature_vector, train_data.target)
 	print(clf.predict(train_feature_vector))
 	train_acc = np.mean(clf.predict(train_feature_vector) == train_data.target)
-	return ([train_acc, train_count_vect, clf])
+	return ([train_acc,
+	 train_count_vect, clf])
 
 def createTopicModel(dataset, feature_type, ngram_range, num_feat, topic, num_topic):
 	# get document-word matrix (vectors) and total words (features)
