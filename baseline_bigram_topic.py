@@ -23,7 +23,8 @@ parser.add_argument('--display_topics', default = True, type = bool)
 parser.add_argument('--num_top_topics', default = 5, type = int) 
 parser.add_argument('--display_features', default = False, type = bool)
 parser.add_argument('--test_style', default = 'R', type = str)
-parser.add_argument('--load_prev', default = False, type = bool)
+parser.add_argument('--load_prev_model', default = False, type = bool)
+parser.add_argument('--load_prev_clf', default = False, type = bool)
 # An example is contained in the training sets of its top-5 most relevant topic-specific classifiers
 
 # <-------------------------- Read Data ----------------------------> 
@@ -53,12 +54,32 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 	if feature_type == 'tf': # bow
 		vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
 		vectors = vectorizer.fit_transform(dataset.data)
+		tf_transformer = TfidfTransformer(use_idf=False).fit(vectors)
+		vectors = tf_transformer.transform(vectors)
 		features = vectorizer.get_feature_names()
 
 	elif feature_type == 'tf_idf':
 		vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
 		vectors = vectorizer.fit_transform(dataset.data)
 		features = vectorizer.get_feature_names()
+
+	elif feature_type == 'custom_tf':
+		with open('custom_vector.pickle', 'rb') as f:
+			vectors = pickle.load(f)
+			tf_transformer = TfidfTransformer(use_idf=False).fit(vectors)
+			vectors = tf_transformer.transform(vectors)
+		with open('feature_names.pickle', 'rb') as f:
+			features = pickle.load(f)
+		vectorizer = None
+
+	elif feature_type == 'custom_tfidf':
+		with open('custom_vector.pickle', 'rb') as f:
+			vectors = pickle.load(f)
+			tf_transformer = TfidfTransformer(use_idf=True).fit(vectors)
+			vectors = tf_transformer.transform(vectors)
+		with open('feature_names.pickle', 'rb') as f:
+			features = pickle.load(f)
+		vectorizer = None
 
 	return vectors, features, vectorizer
 
@@ -201,7 +222,8 @@ def test_main(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	#weighted_preds = (np.sum(doc_topic_distr * all_preds, axis = 1) > 0.5).astype(int)
 	print(weighted_preds)
 	test_acc = np.mean(weighted_preds == test_labels)
-	print(test_acc)
+	# print(test_acc)
+	print("{:.10f}".format(test_acc))
 
 def test_main_(clfs, clf_accs, test_vectors, topic_model, test_labels):
 	num_samples = test_vectors.shape[0]
@@ -222,15 +244,17 @@ def test_main_(clfs, clf_accs, test_vectors, topic_model, test_labels):
 	# 	print(pred) # check how confused these clfs are
 
 	test_acc = np.mean(weighted_preds == test_labels)
-	print(test_acc)
+	# print(test_acc)
+	print("{:.10f}".format(test_acc))
 
-def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels, vectorizer, clf_type):
+def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels, clf_type):
 	if clf_type == 'NB':
 		clf = MultinomialNB().fit(train_vectors,train_labels) # a single classifier trained on all data
 	elif clf_type == 'SVM':
 		clf = SVC(kernel="linear").fit(train_vectors, train_labels)
 	acc = np.mean(clf.predict(test_vectors) == test_labels)
-	print(acc)
+	# print(acc)
+	print("{:.10f}".format(acc))
 
 def main():
 	args = parser.parse_args()
@@ -240,7 +264,7 @@ def main():
 	feature_type = args.vect
 	ngram_range = (1, args.ngram)
 
-	if args.load_prev:
+	if args.load_prev_model:
 		print('Loading previous topic model...')
 		pickle_in = open('saved_model/%s_%s_%i_%i' % (args.topic, args.vect, args.ngram, args.num_topic), 'rb')
 		topic_model, features, vectors, vectorizer = pickle.load(pickle_in)
@@ -259,24 +283,41 @@ def main():
 	# 	# 	print(i)
 	# 	print(len(features))
 
-	print('Creating topic-specific classifiers...')
-	# vectors, features = createFeatureVecForTopic(train_data, feature_type, ngram_range, args.num_feat, args.topic)
-	doc_clf_mask = split_by_topic(args, topic_model, vectors)
+	if args.load_prev_clf:
+		print('Loading saved topic-specific classifiers...')
+		pickle_in = open('saved_clf/%s_%s_%i' % (args.topic, args.clf, args.num_topic), 'rb')
+		clfs, clf_accs, vectorizer = pickle.load(pickle_in)
+	else:
+		print('Creating topic-specific classifiers...')
+		# vectors, features = createFeatureVecForTopic(train_data, feature_type, ngram_range, args.num_feat, args.topic)
+		doc_clf_mask = split_by_topic(args, topic_model, vectors)
 
-	print('Training topic-specific classifiers...')
-	clfs, clf_accs = train_main(args, doc_clf_mask, train_data, vectors)
-	pickle_out = open('saved_clf/%s_%s_%i' % (args.topic, args.clf, args.num_topic), 'wb')
-	pickle.dump((clfs, clf_accs, vectorizer), pickle_out)
+		print('Training topic-specific classifiers...')
+		clfs, clf_accs = train_main(args, doc_clf_mask, train_data, vectors)
+		pickle_out = open('saved_clf/%s_%s_%i' % (args.topic, args.clf, args.num_topic), 'wb')
+		pickle.dump((clfs, clf_accs, vectorizer), pickle_out)
+		
 
 	print('Testing topic-specific classifiers...')
-	test_vectors = vectorizer.transform(test_data.data)
+	if feature_type == "custom_tf":
+		pickle_in = open('custom_vector_test.pickle', 'rb')
+		test_vectors = pickle.load(pickle_in)
+		tf_transformer = TfidfTransformer(use_idf=False).fit(test_vectors)
+		test_vectors = tf_transformer.transform(test_vectors)
+	elif feature_type == "custom_tfidf":
+		pickle_in = open('custom_vector_test.pickle', 'rb')
+		test_vectors = pickle.load(pickle_in)
+		tf_transformer = TfidfTransformer(use_idf=True).fit(test_vectors)
+		test_vectors = tf_transformer.transform(test_vectors)
+	else:
+		test_vectors = vectorizer.transform(test_data.data)
 
 	if args.test_style == 'R':
 		test_main(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
 	else:
 		test_main_(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
 
-	baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, vectorizer, args.clf)
+	baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, args.clf)
 
 if __name__ == '__main__':
 	main()
