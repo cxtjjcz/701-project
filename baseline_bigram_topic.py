@@ -22,6 +22,8 @@ parser.add_argument('--num_topic', default = 20, type = int)
 parser.add_argument('--display_topics', default = False, type = bool)
 parser.add_argument('--num_top_topics', default = 5, type = int) 
 parser.add_argument('--display_features', default = False, type = bool)
+parser.add_argument('--test_style', default = 'R', type = str)
+
 # An example is contained in the training sets of its top-5 most relevant topic-specific classifiers
 
 ################################################################################
