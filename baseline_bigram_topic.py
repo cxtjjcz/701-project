@@ -218,8 +218,8 @@ def test_main_(clfs, clf_accs, test_vectors, topic_model, test_labels):
 	raw_weighted_preds = np.sum(normalized_masked_weights * all_preds, axis = 1)
 	weighted_preds = (raw_weighted_preds > 0.5).astype(int)
 
-	for pred in raw_weighted_preds:
-		print(pred) # check how confused these clfs are
+	# for pred in raw_weighted_preds:
+	# 	print(pred) # check how confused these clfs are
 
 	test_acc = np.mean(weighted_preds == test_labels)
 	print(test_acc)
@@ -265,6 +265,8 @@ def main():
 
 	print('Training topic-specific classifiers...')
 	clfs, clf_accs = train_main(args, doc_clf_mask, train_data, vectors)
+	pickle_out = open('saved_clf/%s_%s_%i' % (args.topic, args.clf, args.num_topic), 'wb')
+	pickle.dump((clfs, clf_accs, vectorizer), pickle_out)
 
 	print('Testing topic-specific classifiers...')
 	test_vectors = vectorizer.transform(test_data.data)
