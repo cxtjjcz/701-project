@@ -95,8 +95,6 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 def createTopicModel(dataset, feature_type, ngram_range, num_feat, topic, num_topic):
 	# get document-word matrix (vectors) and total words (features)
 	vectors, features, vectorizer = createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic)
-	return None, features, vectors, vectorizer
-
 	# run topic model
 	if topic == 'LDA':
 		topic_model = LatentDirichletAllocation(n_components=num_topic, max_iter=5, learning_method='online', \
@@ -186,14 +184,20 @@ def train_main(args, doc_clf_mask, train_data, train_feature_vector):
 	for clf_i in range(num_topics):
 		curr_mask = (doc_clf_mask[:, clf_i]).astype(bool)
 
-		print(sum(curr_mask))
-
 		curr_X = train_feature_vector[curr_mask]
 		curr_Y = np.array(train_data.target)[curr_mask]
-		curr_clf = MultinomialNB().fit(curr_X, curr_Y)
+
+		if args.clf == 'SVM':
+			curr_clf = SVC(kernel="linear").fit(curr_X, curr_Y)
+		elif args.clf == 'NB':
+			curr_clf = MultinomialNB().fit(curr_X, curr_Y)
+
 		curr_train_acc = np.mean(curr_clf.predict(curr_X) == curr_Y)
 		clfs.append(curr_clf)
 		clf_accs.append(curr_train_acc)
+
+		print('Finish training the %i-th classifier.' % (clf_i + 1))
+		print('Total number of training data seen by the current clfs: %i' % sum(curr_mask))
 
 	print(clf_accs) # expect better performance during topic-specific training
 	return clfs, clf_accs
