@@ -237,6 +237,7 @@ def main():
 
 	print('Creating topic model for the corpus...')
 	topic_model, features, vectors, vectorizer = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
+	print("vectors", len(features))
 	if args.topic == "LDA":
 		# Log likelihood: higher the better
 		print("Log likelihood: ", topic_model.score(vectors))
