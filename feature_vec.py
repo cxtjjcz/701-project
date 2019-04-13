@@ -16,8 +16,14 @@ import spacy
 import json
 
 
+<<<<<<< HEAD
+
+# with open('train_data.json') as json_file:  
+#     test_dic = json.load(json_file)
+=======
 with open('train_data.json') as json_file:  
     dependency_dic = json.load(json_file)
+>>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
 
 def readData(rootPath):
     category = ["pos","neg"]
@@ -29,7 +35,11 @@ def readData(rootPath):
 train_data, test_data = readData("")
 
 corpus = train_data.data
+<<<<<<< HEAD
+corpus = corpus[0:100]
+=======
 corpus = corpus
+>>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
 
 # defines a custom vectorizer class
 class CustomVectorizer(CountVectorizer): 
@@ -46,9 +56,13 @@ class CustomVectorizer(CountVectorizer):
 
         # create the analyzer that will be returned by this method
         def analyser(doc):
+<<<<<<< HEAD
+            doc = doc.decode("utf-8")
+=======
             doc = doc.decode("utf-8-sig")
             doc = re.sub(r'(\s*<br.*?>)+\s*', " ", doc)
             doc = re.sub("[^a-zA-Z]+", " ", doc)
+>>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
 
             # load spaCy's model for english language
             spacy.load('en')
@@ -71,23 +85,40 @@ class CustomVectorizer(CountVectorizer):
 
             count = CustomVectorizer.count
 
+<<<<<<< HEAD
+            # lst_pair = test_dic[str(count)]
+=======
             lst_pair = dependency_dic[str(count)]
+>>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
 
-            for pair in lst_pair:
-                temp_str = "" + str(pair[0]) + " " + str(pair[1])
-                unigram_bigram.append(temp_str)
+            # for pair in lst_pair:
+            #     temp_str = "" + str(pair[0]) + " " + str(pair[1])
+            #     unigram_bigram.append(temp_str)
 
+<<<<<<< HEAD
+            CustomVectorizer.count = count + 1
+
+            progress = count/len(corpus)*100
+            print (progress,"% completed")
+=======
 
             progress = CustomVectorizer.count/len(corpus)*100
             CustomVectorizer.count += 1
 
             print (progress,"% processed")
+>>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
             # print(unigram_bigram)
             return(unigram_bigram)
 
         return(analyser)
     
 
+<<<<<<< HEAD
+custom_vec = CustomVectorizer(ngram_range=(1,1),stop_words='english')
+
+matrix = custom_vec.fit_transform(corpus).toarray()
+name = custom_vec.get_feature_names()
+=======
 custom_vectorizer = CustomVectorizer(ngram_range=(1,3),stop_words='english',
                                 encoding="utf-8-sig",
                                 token_pattern=r"(?u)\b\w\w+\b",
@@ -122,3 +153,4 @@ print ("number of features:", len(custom_vectorizer.get_feature_names()))
 #     data = pickle.load(f)
 
 
+>>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
