@@ -8,25 +8,22 @@ from sklearn.datasets import load_files
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
 from sklearn.decomposition import NMF, LatentDirichletAllocation
-from sklearn.model_selection import GridSearchCV
-
-import pyLDAvis
-import pyLDAvis.sklearn
-import matplotlib.pyplot as plt
-
 import pandas as pd
 
 from utils import *
 
 parser = argparse.ArgumentParser(description = 'Movie Review Sentiment Analysis')
 parser.add_argument('--vect', default = 'tf', type = str, help = 'Specify vectorization method.')
-parser.add_argument('--ngram', default = 2, type = str, help = 'Specify ngram range.')
+parser.add_argument('--ngram', default = 3, type = int, help = 'Specify ngram range.')
 parser.add_argument('--topic', default = 'LDA', type = str, help = 'Specify topic model type.')
 parser.add_argument('--clf', default = 'NB', type = str, help = 'Specify choice of classifier.')
-parser.add_argument('--num_feat', default = 1000, type = int)
+parser.add_argument('--num_feat', default = 5000, type = int)
 parser.add_argument('--num_topic', default = 20, type = int)
 parser.add_argument('--display_topics', default = False, type = bool)
 parser.add_argument('--num_top_topics', default = 5, type = int) 
+parser.add_argument('--display_features', default = False, type = bool)
+parser.add_argument('--test_style', default = 'R', type = str)
+
 # An example is contained in the training sets of its top-5 most relevant topic-specific classifiers
 
 ################################################################################
@@ -47,7 +44,12 @@ parser.add_argument('--num_top_topics', default = 5, type = int)
 # 3. Do cross validation on (1) num_topic; (2) num_top_topics
 # 4. Plot correlation between sum(mask) and clf (training acc) -- don't seem to correlate currently
 
+# Experiments:
+# 1. Trigram & 10 topics, topic analysis
+
 ################################################################################
+
+# <-------------------------- Read Data ----------------------------> 
 
 def readData(rootPath):
 	category = ["pos","neg"]
@@ -55,6 +57,8 @@ def readData(rootPath):
 	movie_train = load_files(rootPath + "aclImdb/train", shuffle=True, categories=category)
 	movie_test = load_files(rootPath + "aclImdb/test", shuffle=True, categories=category)
 	return [movie_train, movie_test]
+
+# <-------------------------- Vectorization ----------------------------> 
 
 def createFeatureVec(dataset, ngram_range, feature_type = "bow"):	
 	count_vect = CountVectorizer(ngram_range, stop_words="english")
@@ -70,7 +74,7 @@ def createFeatureVec(dataset, ngram_range, feature_type = "bow"):
 def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic):
 	if topic == 'LDA':
 		assert(feature_type == 'tf')
-		tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=num_feat, stop_words='english')
+		tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
 		tf = tf_vectorizer.fit_transform(dataset.data)
 		tf_feature_names = tf_vectorizer.get_feature_names()
 		vectors, features = (tf, tf_feature_names)
@@ -78,13 +82,63 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 
 	if topic == 'NMF':
 		assert(feature_type == 'tf_idf')
-		tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=num_feat, stop_words='english')
+		tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
 		tfidf = tfidf_vectorizer.fit_transform(dataset.data)
 		tfidf_feature_names = tfidf_vectorizer.get_feature_names() # words whose frequency 'matters'
 		vectors, features = (tfidf, tfidf_feature_names)
 		vectorizer = tfidf_vectorizer
 
 	return vectors, features, vectorizer
+
+# <-------------------------- Topic modeling ----------------------------> 
+
+def createTopicModel(dataset, feature_type, ngram_range, num_feat, topic, num_topic):
+	# get document-word matrix (vectors) and total words (features)
+	vectors, features, vectorizer = createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic)
+	# run topic model
+	if topic == 'LDA':
+		topic_model = LatentDirichletAllocation(n_components=num_topic, max_iter=5, learning_method='online', \
+												learning_offset=50., random_state=0).fit(vectors)
+	if topic == 'NMF':
+		topic_model = NMF(n_components=num_topic, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(vectors)
+		# 'nndsvd' initialization helps with convergence
+	# topic_model = document-topic matrix + topic-word matrix (decomposition of a doc-word matrix)
+	return topic_model, features, vectors, vectorizer
+
+def split_by_topic(args, topic_model, train_X):
+	'''
+	Generates a matrix of size (num_samples, num_topics) in which X_i,j = 1 if doc i is used for clf j
+	'''
+	num_samples = train_X.shape[0]
+	num_topics = args.num_topic
+	num_top_topics = args.num_top_topics # a document will be included in the training set of this number of topics
+
+	doc_clf_mask = np.zeros((num_samples, num_topics))
+	doc_topic_distr = topic_model.transform(train_X) # num_samples x num_topics
+
+	standardize_topic_distr(doc_topic_distr)
+
+	print("--- Iterating through training examples to find their topic mixtures...")
+
+	for doc_i, doc in enumerate(doc_topic_distr):
+		sorted_clf_idx = sorted(list(range(num_topics)), key=doc.__getitem__, reverse=True)[:num_top_topics]
+		for i in sorted_clf_idx:
+			doc_clf_mask[doc_i, i] = 1
+
+	return doc_clf_mask
+
+def standardize_topic_distr(doc_topic_distr):
+	'''
+	This function takes into consideration infrequent topics. The document-topic matrix
+	is normalized vertically such that each entry represents the z-score within topic.
+
+	'''
+	means = np.mean(doc_topic_distr, axis = 0)
+	stds = np.std(doc_topic_distr, axis = 0)
+	eps = 1e-05
+	return (doc_topic_distr - means) / (stds + eps)
+
+# <-------------------------- Classification ----------------------------> 
 
 def trainNB(train_data, feature_type="bow", ngram_range=(1, 2)):
 	# default is unigram + bigram and with stop words removed
@@ -111,55 +165,11 @@ def trainSVM(train_data, feature_type="bow", ngram_range=(1, 2)):
 	clf = SVC(kernel="rbf").fit(train_feature_vector, train_data.target)
 	print(clf.predict(train_feature_vector))
 	train_acc = np.mean(clf.predict(train_feature_vector) == train_data.target)
-	return ([train_acc,
-	 train_count_vect, clf])
+	return ([train_acc, train_count_vect, clf])
 
-def createTopicModel(dataset, feature_type, ngram_range, num_feat, topic, num_topic):
-	# get document-word matrix (vectors) and total words (features)
-	vectors, features, vectorizer = createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic)
-	# run topic model
-	if topic == 'LDA':
-		topic_model = LatentDirichletAllocation(n_components=num_topic, max_iter=5, learning_method='online', \
-												learning_offset=50., random_state=0).fit(vectors)
-	if topic == 'NMF':
-		topic_model = NMF(n_components=no_topics, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(vectors)
-		# 'nndsvd' initialization helps with convergence
-	# topic_model = document-topic matrix + topic-word matrix (decomposition of a doc-word matrix)
-	return topic_model, features, vectors, vectorizer
+# <-------------------------- Main functions ---------------------------->
 
-def split_by_topic(args, topic_model, train_X):
-	'''
-	Generates a matrix of size (num_samples, num_topics) in which X_i,j = 1 if doc i is used for clf j
-	'''
-	num_samples = train_X.shape[0]
-	num_topics = args.num_topic
-	num_top_topics = args.num_top_topics
-
-	doc_clf_mask = np.zeros((num_samples, num_topics))
-	doc_topic_distr = topic_model.transform(train_X) # num_samples x num_topics
-	#doc_topic_distr = np.random.randn(num_samples, num_topics)
-
-	print("--- Iterating through training examples to find their topic mixtures...")
-
-	for doc_i, doc in enumerate(doc_topic_distr):
-		sorted_clf_idx = sorted(list(range(num_topics)), key=doc.__getitem__, reverse=True)[:num_top_topics]
-		for i in sorted_clf_idx:
-			doc_clf_mask[doc_i, i] = 1
-
-	return doc_clf_mask
-
-def standardize_topic_distr(doc_topic_distr):
-	'''
-	This function takes into consideration infrequent topics. The document-topic matrix
-	is normalized vertically such that each entry represents the z-score within topic.
-
-	'''
-	means = np.mean(doc_topic_distr, axis = 0)
-	stds = np.std(doc_topic_distr, axis = 0)
-	eps = 1e-05
-	return (doc_topic_distr - means) / (stds + eps)
-
-def train_main(args, doc_clf_mask, train_data, train_feature_vector, classifier, kernel=None):
+def train_main(args, doc_clf_mask, train_data, train_feature_vector):
 	'''
 	Note:
 	- train_data.data is a list of strings
@@ -174,58 +184,81 @@ def train_main(args, doc_clf_mask, train_data, train_feature_vector, classifier,
 	for clf_i in range(num_topics):
 		curr_mask = (doc_clf_mask[:, clf_i]).astype(bool)
 
-		print(sum(curr_mask))
-
 		curr_X = train_feature_vector[curr_mask]
 		curr_Y = np.array(train_data.target)[curr_mask]
-		if classifier == "NB":
+
+		if args.clf == 'SVM':
+			curr_clf = SVC(kernel="linear").fit(curr_X, curr_Y)
+		elif args.clf == 'NB':
 			curr_clf = MultinomialNB().fit(curr_X, curr_Y)
-		if classifier == "SVM":
-			curr_clf = SVC(kernel=kernel).fit(curr_X, curr_Y)
+
 		curr_train_acc = np.mean(curr_clf.predict(curr_X) == curr_Y)
 		clfs.append(curr_clf)
 		clf_accs.append(curr_train_acc)
 
+		print('Finish training the %i-th classifier.' % (clf_i + 1))
+		print('Total number of training data seen by the current clfs: %i' % sum(curr_mask))
+
 	print(clf_accs) # expect better performance during topic-specific training
-	return clfs
+	return clfs, clf_accs
 
-def GridSearch(vectors):
-	search_params = {'n_components': [10, 20, 25, 30], 'learning_decay': [.5, .7, .9]}
-	lda = LatentDirichletAllocation()
-	model = GridSearchCV(lda, param_grid=search_params)
-	model.fit(vectors)
-	best_lda_model = model.best_estimator_
-	print("Best Model's Params: ", model.best_params_)
-	print("Best Log Likelihood Score: ", model.best_score_)
-	print("Model Perplexity: ", best_lda_model.perplexity(vectors))
-	n_topics = [10, 20, 25, 30]
-	'''log_likelyhoods_5 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.5]
-	log_likelyhoods_7 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.7]
-	log_likelyhoods_9 = [round(gscore.mean_validation_score) for gscore in model.grid_scores_ if gscore.parameters['learning_decay']==0.9]
-
-	plt.figure(figsize=(12, 8))
-	plt.plot(n_topics, log_likelyhoods_5, label='0.5')
-	plt.plot(n_topics, log_likelyhoods_7, label='0.7')
-	plt.plot(n_topics, log_likelyhoods_9, label='0.9')
-	plt.title("Choosing Optimal LDA Model")
-	plt.xlabel("Num Topics")
-	plt.ylabel("Log Likelyhood Scores")
-	plt.legend(title='Learning decay', loc='best')
-	plt.show()'''
-
-def test_main(clfs, test_vectors, topic_model, test_labels):
+def test_main(clfs, test_vectors, topic_model, test_labels, num_top_topics):
+	'''
+	Only use the most relevant topic-specific classifiers for each document
+	'''
 	doc_topic_distr = topic_model.transform(test_vectors)
-	#standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
-	#doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
+	standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
+	doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
 
-	all_preds = np.zeros((test_vectors.shape[0], len(clfs)))
+	num_samples = test_vectors.shape[0]
+	num_topics = len(clfs)
+	doc_clf_mask = np.zeros((num_samples, num_topics))
+	for doc_i, doc in enumerate(doc_topic_distr):
+		sorted_clf_idx = sorted(list(range(num_topics)), key=doc.__getitem__, reverse=True)[:num_top_topics]
+		for i in sorted_clf_idx:
+			doc_clf_mask[doc_i, i] = 1
+
+	all_preds = np.zeros((num_samples, num_topics))
 	for clf_i, clf in enumerate(clfs):
 		all_preds[:, clf_i] = clf.predict(test_vectors)
 
-	weighted_preds = (np.sum(doc_topic_distr * all_preds, axis = 1) > 0.5).astype(int)
+	masked_weights = doc_topic_distr * doc_clf_mask
+	normalized_masked_weights = masked_weights/np.sum(masked_weights, axis = 1).reshape(-1, 1)
+	weighted_preds = (np.sum(normalized_masked_weights * all_preds, axis = 1) > 0.5).astype(int)
+
+	#weighted_preds = (np.sum(doc_topic_distr * all_preds, axis = 1) > 0.5).astype(int)
 	print(weighted_preds)
 	test_acc = np.mean(weighted_preds == test_labels)
 	print(test_acc)
+
+def test_main_(clfs, clf_accs, test_vectors, topic_model, test_labels):
+	num_samples = test_vectors.shape[0]
+	num_topics = len(clfs)
+	all_preds = np.zeros((num_samples, num_topics))
+	for clf_i, clf in enumerate(clfs):
+		all_preds[:, clf_i] = clf.predict(test_vectors)
+
+	doc_topic_distr = topic_model.transform(test_vectors)
+	clf_acc_thd = 0.9 # for now
+	clf_mask = (np.array(clf_accs) > clf_acc_thd).reshape(1,-1) # only look at these clfs
+	masked_weights = doc_topic_distr * clf_mask
+	normalized_masked_weights = masked_weights/np.sum(masked_weights, axis = 1).reshape(-1, 1) # sum to one horizontally
+	raw_weighted_preds = np.sum(normalized_masked_weights * all_preds, axis = 1)
+	weighted_preds = (raw_weighted_preds > 0.5).astype(int)
+
+	for pred in raw_weighted_preds:
+		print(pred) # check how confused these clfs are
+
+	test_acc = np.mean(weighted_preds == test_labels)
+	print(test_acc)
+
+def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels, vectorizer, clf_type):
+	if clf_type == 'NB':
+		clf = MultinomialNB().fit(train_vectors,train_labels) # a single classifier trained on all data
+	elif clf_type == 'SVM':
+		clf = SVC(kernel="linear").fit(train_vectors, train_labels)
+	acc = np.mean(clf.predict(test_vectors) == test_labels)
+	print(acc)
 
 def main():
 	args = parser.parse_args()
@@ -237,42 +270,32 @@ def main():
 
 	print('Creating topic model for the corpus...')
 	topic_model, features, vectors, vectorizer = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
-	if args.topic == "LDA":
-		# Log likelihood: higher the better
-		print("Log likelihood: ", topic_model.score(vectors))
-		# Perplexity: lower the better
-		print("Perplexity: ", topic_model.perplexity(vectors))
-		print(topic_model.get_params())
-		GridSearch(vectors)
+	
 	if args.display_topics: 
 		num_top_words = 10 # display 10 top words from extracted topics
 		display_topics(topic_model, features, num_top_words)
+
+	# if args.display_features:
+	# 	# for i in features:
+	# 	# 	print(i)
+	# 	print(len(features))
 
 	print('Creating topic-specific classifiers...')
 	# vectors, features = createFeatureVecForTopic(train_data, feature_type, ngram_range, args.num_feat, args.topic)
 	doc_clf_mask = split_by_topic(args, topic_model, vectors)
 
 	print('Training topic-specific classifiers...')
-	# NB
-	clfs = train_main(args, doc_clf_mask, train_data, vectors, "NB")
-	# SVM linear
-	clfs = train_main(args, doc_clf_mask, train_data, vectors, "SVM", "linear")
-	# SVM rbf
-	clfs = train_main(args, doc_clf_mask, train_data, vectors, "SVM", "rbf")
+	clfs, clf_accs = train_main(args, doc_clf_mask, train_data, vectors)
 
 	print('Testing topic-specific classifiers...')
 	test_vectors = vectorizer.transform(test_data.data)
-	test_main(clfs, test_vectors, topic_model, test_data.target)
 
-	# print('Training model...')
-	# train_acc, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
-	# test_acc = testNB_SVM(clf, train_count_vect, test_data, feature_type)
-	# test_acc = testNB(clf, train_count_vect, test_data, feature_type)
+	if args.test_style == 'R':
+		test_main(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
+	else:
+		test_main_(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
 
-	# train_acc_svm, train_count_vect_error, clf_svm = trainSVM(train_data, feature_type, ngram_range)
-	# test_acc_svm = testNB_SVM(clf_svm, train_count_vect_error, test_data, feature_type)
-	# print("SVM Training Accuracy:", train_acc_svm, "\nTesting Accuracy", test_acc_svm)
-	# print("Training Accuracy:", train_acc,"\nTesting Accuracy",test_acc)
+	baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, vectorizer, args.clf)
 
 if __name__ == '__main__':
 	main()
