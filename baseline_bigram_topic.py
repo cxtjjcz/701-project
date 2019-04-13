@@ -14,13 +14,14 @@ from utils import *
 
 parser = argparse.ArgumentParser(description = 'Movie Review Sentiment Analysis')
 parser.add_argument('--vect', default = 'tf', type = str, help = 'Specify vectorization method.')
-parser.add_argument('--ngram', default = 2, type = str, help = 'Specify ngram range.')
+parser.add_argument('--ngram', default = 3, type = int, help = 'Specify ngram range.')
 parser.add_argument('--topic', default = 'LDA', type = str, help = 'Specify topic model type.')
 parser.add_argument('--clf', default = 'NB', type = str, help = 'Specify choice of classifier.')
-parser.add_argument('--num_feat', default = 1000, type = int)
-parser.add_argument('--num_topic', default = 30, type = int)
+parser.add_argument('--num_feat', default = 5000, type = int)
+parser.add_argument('--num_topic', default = 20, type = int)
 parser.add_argument('--display_topics', default = False, type = bool)
 parser.add_argument('--num_top_topics', default = 5, type = int) 
+parser.add_argument('--display_features', default = False, type = bool)
 # An example is contained in the training sets of its top-5 most relevant topic-specific classifiers
 
 ################################################################################
@@ -41,7 +42,12 @@ parser.add_argument('--num_top_topics', default = 5, type = int)
 # 3. Do cross validation on (1) num_topic; (2) num_top_topics
 # 4. Plot correlation between sum(mask) and clf (training acc) -- don't seem to correlate currently
 
+# Experiments:
+# 1. Trigram & 10 topics, topic analysis
+
 ################################################################################
+
+# <-------------------------- Read Data ----------------------------> 
 
 def readData(rootPath):
 	category = ["pos","neg"]
@@ -49,6 +55,8 @@ def readData(rootPath):
 	movie_train = load_files(rootPath + "aclImdb/train", shuffle=True, categories=category)
 	movie_test = load_files(rootPath + "aclImdb/test", shuffle=True, categories=category)
 	return [movie_train, movie_test]
+
+# <-------------------------- Vectorization ----------------------------> 
 
 def createFeatureVec(dataset, ngram_range, feature_type = "bow"):	
 	count_vect = CountVectorizer(ngram_range, stop_words="english")
@@ -64,7 +72,7 @@ def createFeatureVec(dataset, ngram_range, feature_type = "bow"):
 def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic):
 	if topic == 'LDA':
 		assert(feature_type == 'tf')
-		tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=num_feat, stop_words='english')
+		tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
 		tf = tf_vectorizer.fit_transform(dataset.data)
 		tf_feature_names = tf_vectorizer.get_feature_names()
 		vectors, features = (tf, tf_feature_names)
@@ -72,7 +80,7 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 
 	if topic == 'NMF':
 		assert(feature_type == 'tf_idf')
-		tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=num_feat, stop_words='english')
+		tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
 		tfidf = tfidf_vectorizer.fit_transform(dataset.data)
 		tfidf_feature_names = tfidf_vectorizer.get_feature_names() # words whose frequency 'matters'
 		vectors, features = (tfidf, tfidf_feature_names)
@@ -80,42 +88,19 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 
 	return vectors, features, vectorizer
 
-def trainNB(train_data, feature_type="bow", ngram_range=(1, 2)):
-	# default is unigram + bigram and with stop words removed
-	train_count_vect, train_feature_vector = createFeatureVec(train_data, ngram_range, feature_type)
-	clf = MultinomialNB().fit(train_feature_vector, train_data.target)
-	train_acc = np.mean(clf.predict(train_feature_vector) == train_data.target)
-	return ([train_acc, train_count_vect, clf])
-
-def testNB_SVM(clf, train_count_vect, test_data, feature_type = "bow"):
-	test_feature_vector = train_count_vect.transform(test_data.data)
-	if feature_type == "tf":
-		tf_transformer = TfidfTransformer(use_idf=False).fit(test_feature_vector)
-		test_feature_vector = tf_transformer.transform(test_feature_vector)
-	elif feature_type == "tf_idf":
-		tfidf_transformer = TfidfTransformer()
-		test_feature_vector = tfidf_transformer.fit_transform(test_feature_vector)
-
-	test_acc = np.mean(clf.predict(test_feature_vector) == test_data.target)
-	return test_acc
-
-def trainSVM(train_data, feature_type="bow", ngram_range=(1, 2)):
-	train_count_vect, train_feature_vector = createFeatureVec(train_data, ngram_range, feature_type)
-	# clf = SVC(kernel="linear").fit(train_feature_vector, train_data.target)
-	clf = SVC(kernel="rbf").fit(train_feature_vector, train_data.target)
-	print(clf.predict(train_feature_vector))
-	train_acc = np.mean(clf.predict(train_feature_vector) == train_data.target)
-	return ([train_acc, train_count_vect, clf])
+# <-------------------------- Topic modeling ----------------------------> 
 
 def createTopicModel(dataset, feature_type, ngram_range, num_feat, topic, num_topic):
 	# get document-word matrix (vectors) and total words (features)
 	vectors, features, vectorizer = createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic)
+	return None, features, vectors, vectorizer
+
 	# run topic model
 	if topic == 'LDA':
 		topic_model = LatentDirichletAllocation(n_components=num_topic, max_iter=5, learning_method='online', \
 												learning_offset=50., random_state=0).fit(vectors)
 	if topic == 'NMF':
-		topic_model = NMF(n_components=no_topics, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(vectors)
+		topic_model = NMF(n_components=num_topic, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(vectors)
 		# 'nndsvd' initialization helps with convergence
 	# topic_model = document-topic matrix + topic-word matrix (decomposition of a doc-word matrix)
 	return topic_model, features, vectors, vectorizer
@@ -153,6 +138,37 @@ def standardize_topic_distr(doc_topic_distr):
 	eps = 1e-05
 	return (doc_topic_distr - means) / (stds + eps)
 
+# <-------------------------- Classification ----------------------------> 
+
+def trainNB(train_data, feature_type="bow", ngram_range=(1, 2)):
+	# default is unigram + bigram and with stop words removed
+	train_count_vect, train_feature_vector = createFeatureVec(train_data, ngram_range, feature_type)
+	clf = MultinomialNB().fit(train_feature_vector, train_data.target)
+	train_acc = np.mean(clf.predict(train_feature_vector) == train_data.target)
+	return ([train_acc, train_count_vect, clf])
+
+def testNB_SVM(clf, train_count_vect, test_data, feature_type = "bow"):
+	test_feature_vector = train_count_vect.transform(test_data.data)
+	if feature_type == "tf":
+		tf_transformer = TfidfTransformer(use_idf=False).fit(test_feature_vector)
+		test_feature_vector = tf_transformer.transform(test_feature_vector)
+	elif feature_type == "tf_idf":
+		tfidf_transformer = TfidfTransformer()
+		test_feature_vector = tfidf_transformer.fit_transform(test_feature_vector)
+
+	test_acc = np.mean(clf.predict(test_feature_vector) == test_data.target)
+	return test_acc
+
+def trainSVM(train_data, feature_type="bow", ngram_range=(1, 2)):
+	train_count_vect, train_feature_vector = createFeatureVec(train_data, ngram_range, feature_type)
+	# clf = SVC(kernel="linear").fit(train_feature_vector, train_data.target)
+	clf = SVC(kernel="rbf").fit(train_feature_vector, train_data.target)
+	print(clf.predict(train_feature_vector))
+	train_acc = np.mean(clf.predict(train_feature_vector) == train_data.target)
+	return ([train_acc, train_count_vect, clf])
+
+# <-------------------------- Main functions ---------------------------->
+
 def train_main(args, doc_clf_mask, train_data, train_feature_vector):
 	'''
 	Note:
@@ -178,21 +194,65 @@ def train_main(args, doc_clf_mask, train_data, train_feature_vector):
 		clf_accs.append(curr_train_acc)
 
 	print(clf_accs) # expect better performance during topic-specific training
-	return clfs
+	return clfs, clf_accs
 
-def test_main(clfs, test_vectors, topic_model, test_labels):
+def test_main(clfs, test_vectors, topic_model, test_labels, num_top_topics):
+	'''
+	Only use the most relevant topic-specific classifiers for each document
+	'''
 	doc_topic_distr = topic_model.transform(test_vectors)
-	#standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
-	#doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
+	standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
+	doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
 
-	all_preds = np.zeros((test_vectors.shape[0], len(clfs)))
+	num_samples = test_vectors.shape[0]
+	num_topics = len(clfs)
+	doc_clf_mask = np.zeros((num_samples, num_topics))
+	for doc_i, doc in enumerate(doc_topic_distr):
+		sorted_clf_idx = sorted(list(range(num_topics)), key=doc.__getitem__, reverse=True)[:num_top_topics]
+		for i in sorted_clf_idx:
+			doc_clf_mask[doc_i, i] = 1
+
+	all_preds = np.zeros((num_samples, num_topics))
 	for clf_i, clf in enumerate(clfs):
 		all_preds[:, clf_i] = clf.predict(test_vectors)
 
-	weighted_preds = (np.sum(doc_topic_distr * all_preds, axis = 1) > 0.5).astype(int)
+	masked_weights = doc_topic_distr * doc_clf_mask
+	normalized_masked_weights = masked_weights/np.sum(masked_weights, axis = 1).reshape(-1, 1)
+	weighted_preds = (np.sum(normalized_masked_weights * all_preds, axis = 1) > 0.5).astype(int)
+
+	#weighted_preds = (np.sum(doc_topic_distr * all_preds, axis = 1) > 0.5).astype(int)
 	print(weighted_preds)
 	test_acc = np.mean(weighted_preds == test_labels)
 	print(test_acc)
+
+def test_main_(clfs, clf_accs, test_vectors, topic_model, test_labels):
+	num_samples = test_vectors.shape[0]
+	num_topics = len(clfs)
+	all_preds = np.zeros((num_samples, num_topics))
+	for clf_i, clf in enumerate(clfs):
+		all_preds[:, clf_i] = clf.predict(test_vectors)
+
+	doc_topic_distr = topic_model.transform(test_vectors)
+	clf_acc_thd = 0.9 # for now
+	clf_mask = (np.array(clf_accs) > clf_acc_thd).reshape(1,-1) # only look at these clfs
+	masked_weights = doc_topic_distr * clf_mask
+	normalized_masked_weights = masked_weights/np.sum(masked_weights, axis = 1).reshape(-1, 1) # sum to one horizontally
+	raw_weighted_preds = np.sum(normalized_masked_weights * all_preds, axis = 1)
+	weighted_preds = (raw_weighted_preds > 0.5).astype(int)
+
+	for pred in raw_weighted_preds:
+		print(pred) # check how confused these clfs are
+
+	test_acc = np.mean(weighted_preds == test_labels)
+	print(test_acc)
+
+def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels, vectorizer, clf_type):
+	if clf_type == 'NB':
+		clf = MultinomialNB().fit(train_vectors,train_labels) # a single classifier trained on all data
+	elif clf_type == 'SVM':
+		clf = SVC(kernel="linear").fit(train_vectors, train_labels)
+	acc = np.mean(clf.predict(test_vectors) == test_labels)
+	print(acc)
 
 def main():
 	args = parser.parse_args()
@@ -204,30 +264,32 @@ def main():
 
 	print('Creating topic model for the corpus...')
 	topic_model, features, vectors, vectorizer = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
+	
 	if args.display_topics: 
 		num_top_words = 10 # display 10 top words from extracted topics
 		display_topics(topic_model, features, num_top_words)
+
+	# if args.display_features:
+	# 	# for i in features:
+	# 	# 	print(i)
+	# 	print(len(features))
 
 	print('Creating topic-specific classifiers...')
 	# vectors, features = createFeatureVecForTopic(train_data, feature_type, ngram_range, args.num_feat, args.topic)
 	doc_clf_mask = split_by_topic(args, topic_model, vectors)
 
 	print('Training topic-specific classifiers...')
-	clfs = train_main(args, doc_clf_mask, train_data, vectors)
+	clfs, clf_accs = train_main(args, doc_clf_mask, train_data, vectors)
 
 	print('Testing topic-specific classifiers...')
 	test_vectors = vectorizer.transform(test_data.data)
-	test_main(clfs, test_vectors, topic_model, test_data.target)
 
-	# print('Training model...')
-	# train_acc, train_count_vect, clf = trainNB(train_data, feature_type, ngram_range)
-	# test_acc = testNB_SVM(clf, train_count_vect, test_data, feature_type)
-	# test_acc = testNB(clf, train_count_vect, test_data, feature_type)
+	if args.test_style == 'R':
+		test_main(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
+	else:
+		test_main_(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
 
-	# train_acc_svm, train_count_vect_error, clf_svm = trainSVM(train_data, feature_type, ngram_range)
-	# test_acc_svm = testNB_SVM(clf_svm, train_count_vect_error, test_data, feature_type)
-	# print("SVM Training Accuracy:", train_acc_svm, "\nTesting Accuracy", test_acc_svm)
-	# print("Training Accuracy:", train_acc,"\nTesting Accuracy",test_acc)
+	baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, vectorizer, args.clf)
 
 if __name__ == '__main__':
 	main()
