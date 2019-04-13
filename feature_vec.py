@@ -16,14 +16,6 @@ import spacy
 import json
 
 
-<<<<<<< HEAD
-
-# with open('train_data.json') as json_file:  
-#     test_dic = json.load(json_file)
-=======
-with open('train_data.json') as json_file:  
-    dependency_dic = json.load(json_file)
->>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
 
 def readData(rootPath):
     category = ["pos","neg"]
@@ -33,13 +25,6 @@ def readData(rootPath):
     return [movie_train, movie_test]
 
 train_data, test_data = readData("")
-
-corpus = train_data.data
-<<<<<<< HEAD
-corpus = corpus[0:100]
-=======
-corpus = corpus
->>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
 
 # defines a custom vectorizer class
 class CustomVectorizer(CountVectorizer): 
@@ -56,13 +41,9 @@ class CustomVectorizer(CountVectorizer):
 
         # create the analyzer that will be returned by this method
         def analyser(doc):
-<<<<<<< HEAD
-            doc = doc.decode("utf-8")
-=======
             doc = doc.decode("utf-8-sig")
             doc = re.sub(r'(\s*<br.*?>)+\s*', " ", doc)
             doc = re.sub("[^a-zA-Z]+", " ", doc)
->>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
 
             # load spaCy's model for english language
             spacy.load('en')
@@ -85,40 +66,26 @@ class CustomVectorizer(CountVectorizer):
 
             count = CustomVectorizer.count
 
-<<<<<<< HEAD
-            # lst_pair = test_dic[str(count)]
-=======
             lst_pair = dependency_dic[str(count)]
->>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
 
-            # for pair in lst_pair:
-            #     temp_str = "" + str(pair[0]) + " " + str(pair[1])
-            #     unigram_bigram.append(temp_str)
+            for pair in lst_pair:
+                temp_str = "" + str(pair[0]) + " " + str(pair[1])
+                unigram_bigram.append(temp_str)
 
-<<<<<<< HEAD
-            CustomVectorizer.count = count + 1
-
-            progress = count/len(corpus)*100
-            print (progress,"% completed")
-=======
 
             progress = CustomVectorizer.count/len(corpus)*100
             CustomVectorizer.count += 1
 
             print (progress,"% processed")
->>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
             # print(unigram_bigram)
             return(unigram_bigram)
 
         return(analyser)
-    
 
-<<<<<<< HEAD
-custom_vec = CustomVectorizer(ngram_range=(1,1),stop_words='english')
 
-matrix = custom_vec.fit_transform(corpus).toarray()
-name = custom_vec.get_feature_names()
-=======
+with open('train_data.json') as json_file:  
+    dependency_dic = json.load(json_file)
+
 custom_vectorizer = CustomVectorizer(ngram_range=(1,3),stop_words='english',
                                 encoding="utf-8-sig",
                                 token_pattern=r"(?u)\b\w\w+\b",
@@ -127,17 +94,7 @@ custom_vectorizer = CustomVectorizer(ngram_range=(1,3),stop_words='english',
 
 # vec = CountVectorizer(ngram_range=(1,2),stop_words='english')
 
-custom_vector = custom_vectorizer.fit_transform(corpus)
-# smatrix = sparse.csr_matrix(matrix)
-# name = custom_vec.get_feature_names()
-
-# matrix_vec = vec.fit_transform(corpus)
-# name_vec = vec.get_feature_names()
-
-with open('custom_vectorizer.pickle', 'wb') as f:
-    # Pickle the 'data' dictionary using the highest protocol available.
-    pickle.dump(custom_vectorizer, f, pickle.HIGHEST_PROTOCOL)
-
+custom_vector = custom_vectorizer.fit_transform(train_data.data)
 with open('custom_vector.pickle', 'wb') as f:
     # Pickle the 'data' dictionary using the highest protocol available.
     pickle.dump(custom_vector, f, pickle.HIGHEST_PROTOCOL)
@@ -145,7 +102,20 @@ with open('custom_vector.pickle', 'wb') as f:
 with open('feature_names.pickle',"wb") as f:
     pickle.dump(custom_vectorizer.get_feature_names(), f, pickle.HIGHEST_PROTOCOL)
 
-print ("number of features:", len(custom_vectorizer.get_feature_names()))
+
+with open('test_data.json') as json_file:  
+    dependency_dic = json.load(json_file)
+CustomVectorizer.count = 0
+
+test_vector = custom_vectorizer.transform(test_data.data)
+with open('custom_vector_test.pickle', 'wb') as f:
+    # Pickle the 'data' dictionary using the highest protocol available.
+    pickle.dump(test_vector, f, pickle.HIGHEST_PROTOCOL)
+
+
+# with open('custom_vectorizer.pickle', 'wb') as f:
+#     # Pickle the 'data' dictionary using the highest protocol available.
+#     pickle.dump(custom_vectorizer, f, pickle.HIGHEST_PROTOCOL)
 
 # with open('data.pickle', 'rb') as f:
 #     # The protocol version used is detected automatically, so we do not
@@ -153,4 +123,3 @@ print ("number of features:", len(custom_vectorizer.get_feature_names()))
 #     data = pickle.load(f)
 
 
->>>>>>> 4bf4bfc8ab8db95947f86ff9c533b5a4e7a9de4f
