@@ -1,4 +1,4 @@
-import os, argparse
+import os, argparse, pickle
 import numpy as np
 import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
@@ -19,35 +19,12 @@ parser.add_argument('--topic', default = 'LDA', type = str, help = 'Specify topi
 parser.add_argument('--clf', default = 'NB', type = str, help = 'Specify choice of classifier.')
 parser.add_argument('--num_feat', default = 5000, type = int)
 parser.add_argument('--num_topic', default = 20, type = int)
-parser.add_argument('--display_topics', default = False, type = bool)
+parser.add_argument('--display_topics', default = True, type = bool)
 parser.add_argument('--num_top_topics', default = 5, type = int) 
 parser.add_argument('--display_features', default = False, type = bool)
 parser.add_argument('--test_style', default = 'R', type = str)
-
+parser.add_argument('--load_prev', default = False, type = bool)
 # An example is contained in the training sets of its top-5 most relevant topic-specific classifiers
-
-################################################################################
-# RESULTS:
-
-# feature_type = "bow" 
-# with unigram + bigram: training acc = 0.99704; test acc = 0.84272
-
-# feature_type = "tf" 
-#with unigram + bigram: training acc = 0.94792; test acc = 0.85372
-
-# feature_type = "tf_idf" 
-#with unigram + bigram: training acc = 0.9844; test acc = 0.85476
-
-# TODO:
-# 1. Optimize topic model to extract more meaningful topics
-# 2. Finish all experiments (currently unigram + tf + LDA is the only combo tested)
-# 3. Do cross validation on (1) num_topic; (2) num_top_topics
-# 4. Plot correlation between sum(mask) and clf (training acc) -- don't seem to correlate currently
-
-# Experiments:
-# 1. Trigram & 10 topics, topic analysis
-
-################################################################################
 
 # <-------------------------- Read Data ----------------------------> 
 
@@ -72,21 +49,16 @@ def createFeatureVec(dataset, ngram_range, feature_type = "bow"):
 	return count_vect, feature_vector
 
 def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic):
-	if topic == 'LDA':
-		assert(feature_type == 'tf')
-		tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
-		tf = tf_vectorizer.fit_transform(dataset.data)
-		tf_feature_names = tf_vectorizer.get_feature_names()
-		vectors, features = (tf, tf_feature_names)
-		vectorizer = tf_vectorizer
 
-	if topic == 'NMF':
-		assert(feature_type == 'tf_idf')
-		tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
-		tfidf = tfidf_vectorizer.fit_transform(dataset.data)
-		tfidf_feature_names = tfidf_vectorizer.get_feature_names() # words whose frequency 'matters'
-		vectors, features = (tfidf, tfidf_feature_names)
-		vectorizer = tfidf_vectorizer
+	if feature_type == 'tf': # bow
+		vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
+		vectors = vectorizer.fit_transform(dataset.data)
+		features = vectorizer.get_feature_names()
+
+	elif feature_type == 'tf_idf':
+		vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
+		vectors = vectorizer.fit_transform(dataset.data)
+		features = vectorizer.get_feature_names()
 
 	return vectors, features, vectorizer
 
@@ -268,8 +240,15 @@ def main():
 	feature_type = args.vect
 	ngram_range = (1, args.ngram)
 
-	print('Creating topic model for the corpus...')
-	topic_model, features, vectors, vectorizer = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
+	if args.load_prev:
+		print('Loading previous topic model...')
+		pickle_in = open('saved_model/%s_%s_%i_%i' % (args.topic, args.vect, args.ngram, args.num_topic), 'rb')
+		topic_model, features, vectors, vectorizer = pickle.load(pickle_in)
+	else:
+		print('Creating topic model for the corpus...')
+		topic_model, features, vectors, vectorizer = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
+		pickle_out = open('saved_model/%s_%s_%i_%i' % (args.topic, args.vect, args.ngram, args.num_topic), 'wb')
+		pickle.dump((topic_model, features, vectors, vectorizer), pickle_out)
 	
 	if args.display_topics: 
 		num_top_words = 10 # display 10 top words from extracted topics
