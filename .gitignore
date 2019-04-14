@@ -2,3 +2,4 @@
 /saved_model
 test.py
 .DS_Store
+aclImdb/train/.DS_Store
