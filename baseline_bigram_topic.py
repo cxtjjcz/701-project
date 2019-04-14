@@ -52,14 +52,14 @@ def createFeatureVec(dataset, ngram_range, feature_type = "bow"):
 def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic):
 
 	if feature_type == 'tf': # bow
-		vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
+		vectorizer = CountVectorizer(max_features=None, stop_words='english', ngram_range = ngram_range)
 		vectors = vectorizer.fit_transform(dataset.data)
 		tf_transformer = TfidfTransformer(use_idf=False).fit(vectors)
 		vectors = tf_transformer.transform(vectors)
 		features = vectorizer.get_feature_names()
 
 	elif feature_type == 'tf_idf':
-		vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
+		vectorizer = TfidfVectorizer(max_features=None, stop_words='english', ngram_range = ngram_range)
 		vectors = vectorizer.fit_transform(dataset.data)
 		features = vectorizer.get_feature_names()
 
