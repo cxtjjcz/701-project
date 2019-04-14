@@ -68,6 +68,13 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 		vectors = vectorizer.fit_transform(dataset.data)
 		features = vectorizer.get_feature_names()
 
+	elif feature_type == 'custom_bow':
+		with open('custom_vector.pickle', 'rb') as f:
+			vectors = pickle.load(f)
+		with open('feature_names.pickle', 'rb') as f:
+			features = pickle.load(f)
+		vectorizer = None
+
 	elif feature_type == 'custom_tf':
 		with open('custom_vector.pickle', 'rb') as f:
 			vectors = pickle.load(f)
@@ -80,8 +87,8 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 	elif feature_type == 'custom_tfidf':
 		with open('custom_vector.pickle', 'rb') as f:
 			vectors = pickle.load(f)
-			tf_transformer = TfidfTransformer(use_idf=True).fit(vectors)
-			vectors = tf_transformer.transform(vectors)
+			tfidf_transformer = TfidfTransformer(use_idf=True).fit(vectors)
+			vectors = tfidf_transformer.transform(vectors)
 		with open('feature_names.pickle', 'rb') as f:
 			features = pickle.load(f)
 		vectorizer = None
@@ -304,7 +311,10 @@ def main():
 		
 
 	print('Testing topic-specific classifiers...')
-	if feature_type == "custom_tf":
+	if feature_type == "custom_bow":
+		pickle_in = open('custom_vector_test.pickle', 'rb')
+		test_vectors = pickle.load(pickle_in)
+	elif feature_type == "custom_tf":
 		pickle_in = open('custom_vector_test.pickle', 'rb')
 		test_vectors = pickle.load(pickle_in)
 		tf_transformer = TfidfTransformer(use_idf=False).fit(test_vectors)
@@ -312,8 +322,8 @@ def main():
 	elif feature_type == "custom_tfidf":
 		pickle_in = open('custom_vector_test.pickle', 'rb')
 		test_vectors = pickle.load(pickle_in)
-		tf_transformer = TfidfTransformer(use_idf=True).fit(test_vectors)
-		test_vectors = tf_transformer.transform(test_vectors)
+		tfidf_transformer = TfidfTransformer(use_idf=True).fit(test_vectors)
+		test_vectors = tfidf_transformer.transform(test_vectors)
 	else:
 		test_vectors = vectorizer.transform(test_data.data)
 
