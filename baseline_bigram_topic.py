@@ -121,7 +121,7 @@ def split_by_topic(args, topic_model, train_X):
 	doc_clf_mask = np.zeros((num_samples, num_topics))
 	doc_topic_distr = topic_model.transform(train_X) # num_samples x num_topics
 
-	standardize_topic_distr(doc_topic_distr)
+	doc_topic_distr = standardize_topic_distr(doc_topic_distr)
 
 	print("--- Iterating through training examples to find their topic mixtures...")
 
@@ -141,7 +141,7 @@ def standardize_topic_distr(doc_topic_distr):
 	means = np.mean(doc_topic_distr, axis = 0)
 	stds = np.std(doc_topic_distr, axis = 0)
 	eps = 1e-05
-	return (doc_topic_distr - means) / (stds + eps)
+	return np.absolute(doc_topic_distr - means) / (stds + eps)
 
 # <-------------------------- Classification ----------------------------> 
 
@@ -207,12 +207,12 @@ def train_main(args, doc_clf_mask, train_data, train_feature_vector):
 	print(clf_accs) # expect better performance during topic-specific training
 	return clfs, clf_accs
 
-def test_main(clfs, test_vectors, topic_model, test_labels, num_top_topics):
+def test_main_R(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	'''
 	Only use the most relevant topic-specific classifiers for each document
 	'''
 	doc_topic_distr = topic_model.transform(test_vectors)
-	standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
+	doc_topic_distr = standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
 	doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
 
 	num_samples = test_vectors.shape[0]
@@ -237,7 +237,7 @@ def test_main(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	# print(test_acc)
 	print("{:.10f}".format(test_acc))
 
-def test_main_(clfs, clf_accs, test_vectors, topic_model, test_labels):
+def test_main_P(clfs, clf_accs, test_vectors, topic_model, test_labels):
 	num_samples = test_vectors.shape[0]
 	num_topics = len(clfs)
 	all_preds = np.zeros((num_samples, num_topics))
@@ -257,6 +257,24 @@ def test_main_(clfs, clf_accs, test_vectors, topic_model, test_labels):
 
 	test_acc = np.mean(weighted_preds == test_labels)
 	# print(test_acc)
+	print("{:.10f}".format(test_acc))
+
+def test_main_A(clfs, test_vectors, topic_model, test_labels, num_top_topics):
+	doc_topic_distr = topic_model.transform(test_vectors)
+	doc_topic_distr = standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
+	doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
+
+	num_samples = test_vectors.shape[0]
+	num_topics = len(clfs)
+
+	all_preds = np.zeros((num_samples, num_topics))
+	for clf_i, clf in enumerate(clfs):
+		all_preds[:, clf_i] = clf.predict(test_vectors)
+
+	weighted_preds = (np.sum(doc_topic_distr * all_preds, axis = 1) > 0.5).astype(int)
+
+	print(weighted_preds)
+	test_acc = np.mean(weighted_preds == test_labels)
 	print("{:.10f}".format(test_acc))
 
 def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels, clf_type):
@@ -328,9 +346,11 @@ def main():
 		test_vectors = vectorizer.transform(test_data.data)
 
 	if args.test_style == 'R':
-		test_main(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
-	else:
-		test_main_(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
+		test_main_R(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
+	elif args.test_style == 'P':
+		test_main_P(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
+	elif args.test_style == 'A':
+		test_main_A(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics)
 
 	baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, args.clf)
 
