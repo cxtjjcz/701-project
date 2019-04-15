@@ -220,8 +220,16 @@ def test_main_R(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	Only use the most relevant topic-specific classifiers for each document
 	'''
 	doc_topic_distr = topic_model.transform(test_vectors)
+<<<<<<< HEAD
 	doc_topic_distr = standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
 	doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
+=======
+	# doc_topic_distr = np.exp(standardize_topic_distr(doc_topic_distr)) # standardize vertically to account for rare topics
+	# doc_topic_distr = standardize_topic_distr(doc_topic_distr)
+	# doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
+
+	# num_top_topics = 1
+>>>>>>> c77d5a5acd22c9829c5a7804a213202f4ae996a2
 
 	num_samples = test_vectors.shape[0]
 	num_topics = len(clfs)
