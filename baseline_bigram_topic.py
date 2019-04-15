@@ -93,6 +93,13 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 			features = pickle.load(f)
 		vectorizer = None
 
+	elif feature_type == 'better_bow':
+		with open('custom_vector_nodep.pickle', 'rb') as f:
+			vectors = pickle.load(f)
+		with open('feature_names_nodep.pickle', 'rb') as f:
+			features = pickle.load(f)
+		vectorizer = None
+
 	return vectors, features, vectorizer
 
 # <-------------------------- Topic modeling ----------------------------> 
@@ -313,10 +320,10 @@ def main():
 		num_top_words = 10 # display 10 top words from extracted topics
 		display_topics(topic_model, features, num_top_words)
 
-	# if args.display_features:
-	# 	# for i in features:
-	# 	# 	print(i)
-	# 	print(len(features))
+	if args.display_features:
+		# for i in features:
+		# 	print(i)
+		print(len(features))
 
 	if args.load_prev_clf:
 		print('Loading saved topic-specific classifiers...')
@@ -332,7 +339,6 @@ def main():
 		pickle_out = open('saved_clf_test/%s_%s_%i_%i' % (args.topic, args.clf, args.num_topic, args.num_top_topics), 'wb')
 		pickle.dump((clfs, clf_accs, vectorizer), pickle_out)
 		
-
 	print('Testing topic-specific classifiers...')
 	if feature_type == "custom_bow":
 		pickle_in = open('custom_vector_test.pickle', 'rb')
@@ -347,6 +353,9 @@ def main():
 		test_vectors = pickle.load(pickle_in)
 		tfidf_transformer = TfidfTransformer(use_idf=True).fit(test_vectors)
 		test_vectors = tfidf_transformer.transform(test_vectors)
+	elif feature_type == "better_bow":
+		pickle_in = open('custom_vector_test_nodep.pickle', 'rb')
+		test_vectors = pickle.load(pickle_in)
 	else:
 		test_vectors = vectorizer.transform(test_data.data)
 
