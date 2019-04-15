@@ -215,7 +215,7 @@ def test_main_R(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	# doc_topic_distr = standardize_topic_distr(doc_topic_distr)
 	# doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
 
-	num_top_topics = 1
+	# num_top_topics = 1
 
 	num_samples = test_vectors.shape[0]
 	num_topics = len(clfs)
