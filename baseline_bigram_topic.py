@@ -11,6 +11,7 @@ from sklearn.decomposition import NMF, LatentDirichletAllocation
 import pandas as pd
 
 from utils import *
+import random
 
 parser = argparse.ArgumentParser(description = 'Movie Review Sentiment Analysis')
 parser.add_argument('--vect', default = 'tf', type = str, help = 'Specify vectorization method.')
@@ -20,7 +21,7 @@ parser.add_argument('--clf', default = 'NB', type = str, help = 'Specify choice 
 parser.add_argument('--num_feat', default = 5000, type = int)
 parser.add_argument('--num_topic', default = 20, type = int)
 parser.add_argument('--display_topics', default = True, type = bool)
-parser.add_argument('--num_top_topics', default = 3, type = int) 
+parser.add_argument('--num_top_topics', default = 5, type = int) 
 parser.add_argument('--display_features', default = False, type = bool)
 parser.add_argument('--test_style', default = 'R', type = str)
 parser.add_argument('--load_prev_model', default = False, type = bool)
@@ -29,12 +30,12 @@ parser.add_argument('--load_prev_clf', default = False, type = bool)
 
 # <-------------------------- Read Data ----------------------------> 
 
-def readData(rootPath):
-	category = ["pos","neg"]
-	#load only labeled data
-	movie_train = load_files(rootPath + "aclImdb/train", shuffle=True, categories=category)
-	movie_test = load_files(rootPath + "aclImdb/test", shuffle=True, categories=category)
-	return [movie_train, movie_test]
+# def readData(rootPath):
+# 	category = ["pos","neg"]
+# 	#load only labeled data
+# 	movie_train = load_files(rootPath + "aclImdb/train", shuffle=True, categories=category)
+# 	movie_test = load_files(rootPath + "aclImdb/test", shuffle=True, categories=category)
+# 	return [movie_train, movie_test]
 
 # <-------------------------- Vectorization ----------------------------> 
 
@@ -52,7 +53,7 @@ def createFeatureVec(dataset, ngram_range, feature_type = "bow"):
 def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic):
 
 	if feature_type == 'bow':
-		vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=None, stop_words='english', ngram_range = ngram_range)
+		vectorizer = CountVectorizer(max_features=None, stop_words='english', ngram_range = ngram_range)
 		vectors = vectorizer.fit_transform(dataset.data)
 		features = vectorizer.get_feature_names()
 
@@ -120,7 +121,8 @@ def split_by_topic(args, topic_model, train_X):
 
 	doc_clf_mask = np.zeros((num_samples, num_topics))
 	doc_topic_distr = topic_model.transform(train_X) # num_samples x num_topics
-	# doc_topic_distr = np.exp(standardize_topic_distr(doc_topic_distr))
+
+	doc_topic_distr = standardize_topic_distr(doc_topic_distr)
 
 	print("--- Iterating through training examples to find their topic mixtures...")
 
@@ -140,7 +142,7 @@ def standardize_topic_distr(doc_topic_distr):
 	means = np.mean(doc_topic_distr, axis = 0)
 	stds = np.std(doc_topic_distr, axis = 0)
 	eps = 1e-05
-	return (doc_topic_distr - means) / (stds + eps)
+	return np.absolute(doc_topic_distr - means) / (stds + eps)
 
 # <-------------------------- Classification ----------------------------> 
 
@@ -211,11 +213,8 @@ def test_main_R(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	Only use the most relevant topic-specific classifiers for each document
 	'''
 	doc_topic_distr = topic_model.transform(test_vectors)
-	# doc_topic_distr = np.exp(standardize_topic_distr(doc_topic_distr)) # standardize vertically to account for rare topics
-	# doc_topic_distr = standardize_topic_distr(doc_topic_distr)
-	# doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
-
-	num_top_topics = 1
+	doc_topic_distr = standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
+	doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
 
 	num_samples = test_vectors.shape[0]
 	num_topics = len(clfs)
@@ -230,9 +229,6 @@ def test_main_R(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 		all_preds[:, clf_i] = clf.predict(test_vectors)
 
 	masked_weights = doc_topic_distr * doc_clf_mask
-
-	print(np.sum(masked_weights < 0)) # total number of negative z-scores
-
 	normalized_masked_weights = masked_weights/np.sum(masked_weights, axis = 1).reshape(-1, 1)
 	weighted_preds = (np.sum(normalized_masked_weights * all_preds, axis = 1) > 0.5).astype(int)
 
@@ -266,8 +262,8 @@ def test_main_P(clfs, clf_accs, test_vectors, topic_model, test_labels):
 
 def test_main_A(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	doc_topic_distr = topic_model.transform(test_vectors)
-	# doc_topic_distr = np.exp(standardize_topic_distr(doc_topic_distr)) # standardize vertically to account for rare topics
-	# doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
+	doc_topic_distr = standardize_topic_distr(doc_topic_distr) # standardize vertically to account for rare topics
+	doc_topic_distr = doc_topic_distr / np.sum(doc_topic_distr, axis = 1).reshape(-1, 1) # standardize horizontally to get a topic distribution per document
 
 	num_samples = test_vectors.shape[0]
 	num_topics = len(clfs)
@@ -290,26 +286,27 @@ def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels
 	acc = np.mean(clf.predict(test_vectors) == test_labels)
 	# print(acc)
 	print("{:.10f}".format(acc))
+	return acc
 
-def main():
+def main_helper(train_data, test_data):
 	args = parser.parse_args()
 
 	print('Loading data...')
-	train_data, test_data = readData("")
+	# train_data, test_data = readData("")
 	feature_type = args.vect
 	ngram_range = (1, args.ngram)
 
 	if args.load_prev_model:
 		print('Loading previous topic model...')
-		pickle_in = open('saved_model_test/%s_%s_%i_%i' % (args.topic, args.vect, args.ngram, args.num_topic), 'rb')
+		pickle_in = open('saved_model/%s_%s_%i_%i' % (args.topic, args.vect, args.ngram, args.num_topic), 'rb')
 		topic_model, features, vectors, vectorizer = pickle.load(pickle_in)
 	else:
 		print('Creating topic model for the corpus...')
 		topic_model, features, vectors, vectorizer = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
-		pickle_out = open('saved_model_test/%s_%s_%i_%i' % (args.topic, args.vect, args.ngram, args.num_topic), 'wb')
+		pickle_out = open('saved_model/%s_%s_%i_%i' % (args.topic, args.vect, args.ngram, args.num_topic), 'wb')
 		pickle.dump((topic_model, features, vectors, vectorizer), pickle_out)
 	
-	if args.display_topics == True:
+	if args.display_topics: 
 		num_top_words = 10 # display 10 top words from extracted topics
 		display_topics(topic_model, features, num_top_words)
 
@@ -320,7 +317,7 @@ def main():
 
 	if args.load_prev_clf:
 		print('Loading saved topic-specific classifiers...')
-		pickle_in = open('saved_clf_test/%s_%s_%i_%i' % (args.topic, args.clf, args.num_topic, args.num_top_topics), 'rb')
+		pickle_in = open('saved_clf/%s_%s_%i' % (args.topic, args.clf, args.num_topic), 'rb')
 		clfs, clf_accs, vectorizer = pickle.load(pickle_in)
 	else:
 		print('Creating topic-specific classifiers...')
@@ -329,7 +326,7 @@ def main():
 
 		print('Training topic-specific classifiers...')
 		clfs, clf_accs = train_main(args, doc_clf_mask, train_data, vectors)
-		pickle_out = open('saved_clf_test/%s_%s_%i_%i' % (args.topic, args.clf, args.num_topic, args.num_top_topics), 'wb')
+		pickle_out = open('saved_clf/%s_%s_%i' % (args.topic, args.clf, args.num_topic), 'wb')
 		pickle.dump((clfs, clf_accs, vectorizer), pickle_out)
 		
 
@@ -357,7 +354,49 @@ def main():
 	elif args.test_style == 'A':
 		test_main_A(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics)
 
-	# baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, args.clf)
+	acc = baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, args.clf)
+	return acc
+
+
+def main():
+
+	category = ["pos","neg"]
+
+	rootPath = ""
+	#load only labeled data
+	movie_train_all = load_files(rootPath + "aclImdb/train", shuffle=True, categories=category)
+
+	total_len = len(movie_train_all.data)
+	random.shuffle(movie_train_all.data)
+
+	
+	num_fold = 5
+
+	beginning = 0
+	end = total_len/num_fold
+	count = 0
+
+	total_accu = 0
+
+	for i in range(num_fold):
+
+		# only look at the training data
+		movie_train = movie_train_all.data[beginning:end]
+		movie_test = movie_train_all.data[:beginning] + movie_train_all.data[end:]
+
+		acc = main_helper(movie_train, movie_test)
+		print("count = ", count, "Accuracy is", acc)
+
+		total_accu += acc
+		beginning += total_len/num_fold
+		end += total_len/num_fold
+
+		count += 1
+
+	ave_accuracy = total_accu / num_fold
+	print("Average accuracy is ", ave_accuracy)
+
+
 
 if __name__ == '__main__':
 	main()
