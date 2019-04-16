@@ -1,6 +1,7 @@
 import os, argparse, pickle
 import numpy as np
 import sklearn
+import sklearn.datasets
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
@@ -237,6 +238,7 @@ def test_main_R(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	test_acc = np.mean(weighted_preds == test_labels)
 	# print(test_acc)
 	print("{:.10f}".format(test_acc))
+	return test_acc
 
 def test_main_P(clfs, clf_accs, test_vectors, topic_model, test_labels):
 	num_samples = test_vectors.shape[0]
@@ -259,6 +261,7 @@ def test_main_P(clfs, clf_accs, test_vectors, topic_model, test_labels):
 	test_acc = np.mean(weighted_preds == test_labels)
 	# print(test_acc)
 	print("{:.10f}".format(test_acc))
+	return test_acc
 
 def test_main_A(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	doc_topic_distr = topic_model.transform(test_vectors)
@@ -277,6 +280,7 @@ def test_main_A(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	print(weighted_preds)
 	test_acc = np.mean(weighted_preds == test_labels)
 	print("{:.10f}".format(test_acc))
+	return test_acc
 
 def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels, clf_type):
 	if clf_type == 'NB':
@@ -288,8 +292,7 @@ def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels
 	print("{:.10f}".format(acc))
 	return acc
 
-def main_helper(train_data, test_data):
-	args = parser.parse_args()
+def main_helper(train_data, test_data, args, cv = True):
 
 	print('Loading data...')
 	# train_data, test_data = readData("")
@@ -348,17 +351,18 @@ def main_helper(train_data, test_data):
 		test_vectors = vectorizer.transform(test_data.data)
 
 	if args.test_style == 'R':
-		test_main_R(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
+		acc = test_main_R(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
 	elif args.test_style == 'P':
-		test_main_P(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
+		acc = test_main_P(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
 	elif args.test_style == 'A':
-		test_main_A(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics)
+		acc = test_main_A(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics)
 
-	acc = baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, args.clf)
+	# acc = baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, args.clf)
 	return acc
 
 
 def main():
+	args = parser.parse_args()
 
 	category = ["pos","neg"]
 
@@ -367,39 +371,41 @@ def main():
 	movie_train_all = load_files(rootPath + "aclImdb/train", shuffle=True, categories=category)
 
 	total_len = len(movie_train_all.data)
-	random.shuffle(movie_train_all.data)
-
 	
 	num_fold = 5
 
 	beginning = 0
-	end = total_len/num_fold
-	count = 0
+	end = total_len//num_fold
 
 	total_accu = 0
 
 	for i in range(num_fold):
 
 		# only look at the training data
-		movie_train = movie_train_all.data[beginning:end]
-		movie_test = movie_train_all.data[:beginning] + movie_train_all.data[end:]
+		movie_test_data = movie_train_all.data[beginning:end]
+		move_test_target = movie_train_all.target[beginning:end]
+		movie_train_data = movie_train_all.data[:beginning] + movie_train_all.data[end:]
+		movie_train_target = np.concatenate((movie_train_all.target[:beginning], movie_train_all.target[end:]))
 
-		acc = main_helper(movie_train, movie_test)
-		print("count = ", count, "Accuracy is", acc)
+		movie_test = sklearn.datasets.base.Bunch(data=movie_test_data, target=move_test_target)
+		movie_train = sklearn.datasets.base.Bunch(data=movie_train_data, target=movie_train_target)
+
+
+		acc = main_helper(movie_train,  movie_test, args)
+		print("Fold = ", i, "Accuracy is", acc)
 
 		total_accu += acc
-		beginning += total_len/num_fold
-		end += total_len/num_fold
+		beginning = end
+		end += total_len//num_fold
 
-		count += 1
 
 	ave_accuracy = total_accu / num_fold
 	print("Average accuracy is ", ave_accuracy)
 
 
 
-# if __name__ == '__main__':
-# 	main()
+if __name__ == '__main__':
+	main()
 
 
 
