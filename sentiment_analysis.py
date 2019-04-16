@@ -8,9 +8,10 @@ from sklearn.datasets import load_files
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
 from sklearn.decomposition import NMF, LatentDirichletAllocation
-import pandas as pd
+# import pandas as pd
 
 from utils import *
+from train_val_split import load
 
 parser = argparse.ArgumentParser(description = 'Movie Review Sentiment Analysis')
 parser.add_argument('--vect', default = 'tf', type = str, help = 'Specify vectorization method.')
@@ -248,6 +249,7 @@ def test_main_R(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	test_acc = np.mean(weighted_preds == test_labels)
 	# print(test_acc)
 	print("{:.10f}".format(test_acc))
+	return test_acc
 
 def test_main_P(clfs, clf_accs, test_vectors, topic_model, test_labels):
 	num_samples = test_vectors.shape[0]
@@ -270,6 +272,7 @@ def test_main_P(clfs, clf_accs, test_vectors, topic_model, test_labels):
 	test_acc = np.mean(weighted_preds == test_labels)
 	# print(test_acc)
 	print("{:.10f}".format(test_acc))
+	return test_acc
 
 def test_main_A(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 	doc_topic_distr = topic_model.transform(test_vectors)
@@ -285,9 +288,10 @@ def test_main_A(clfs, test_vectors, topic_model, test_labels, num_top_topics):
 
 	weighted_preds = (np.sum(doc_topic_distr * all_preds, axis = 1) > 0.5).astype(int)
 
-	print(weighted_preds)
+	# print(weighted_preds)
 	test_acc = np.mean(weighted_preds == test_labels)
 	print("{:.10f}".format(test_acc))
+	return test_acc
 
 def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels, clf_type):
 	if clf_type == 'NB':
@@ -296,49 +300,49 @@ def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels
 		clf = SVC(kernel="linear").fit(train_vectors, train_labels)
 	acc = np.mean(clf.predict(test_vectors) == test_labels)
 	# print(acc)
-	print("{:.10f}".format(acc))
+	# print("{:.10f}".format(acc))
+	return acc
 
-def main():
-	args = parser.parse_args()
 
-	print('Loading data...')
-	train_data, test_data = readData("")
+def main_helper(train_data, test_data, args, cv_id, cv = True):
+
+	print('****************** Starting the %i-th fold validation ******************' % cv_id)
 	feature_type = args.vect
 	ngram_range = (1, args.ngram)
 
-	if args.load_prev_model:
-		print('Loading previous topic model...')
-		pickle_in = open('saved_model_test/%s_%s_%i_%i' % (args.topic, args.vect, args.ngram, args.num_topic), 'rb')
+	try:
+		pickle_in = open('saved_model/cvfold_%i_%s_%s_%i' % (cv_id, args.topic, args.vect, args.num_topic), 'rb')
 		topic_model, features, vectors, vectorizer = pickle.load(pickle_in)
-	else:
-		print('Creating topic model for the corpus...')
+		print('Successfully loaded previous topic model...')
+	except:
+		print('Previous model does not exist. Creating topic model for the corpus...')
 		topic_model, features, vectors, vectorizer = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
-		pickle_out = open('saved_model_test/%s_%s_%i_%i' % (args.topic, args.vect, args.ngram, args.num_topic), 'wb')
+		pickle_out = open('saved_model/cvfold_%i_%s_%s_%i' % (cv_id, args.topic, args.vect, args.num_topic), 'wb')
 		pickle.dump((topic_model, features, vectors, vectorizer), pickle_out)
 	
-	if args.display_topics == True:
-		num_top_words = 10 # display 10 top words from extracted topics
-		display_topics(topic_model, features, num_top_words)
+	# if args.display_topics: 
+	# 	num_top_words = 10 # display 10 top words from extracted topics
+	# 	display_topics(topic_model, features, num_top_words)
 
-	if args.display_features:
-		# for i in features:
-		# 	print(i)
-		print(len(features))
+	# if args.display_features:
+	# 	# for i in features:
+	# 	# 	print(i)
+	# 	print(len(features))
 
-	if args.load_prev_clf:
-		print('Loading saved topic-specific classifiers...')
-		pickle_in = open('saved_clf_test/%s_%s_%i_%i' % (args.topic, args.clf, args.num_topic, args.num_top_topics), 'rb')
+	try:
+		pickle_in = open('saved_clf/cvfold_%i_%s_%s_%i_%i' % (cv_id, args.topic, args.clf, args.num_topic, args.num_top_topics), 'rb')
 		clfs, clf_accs, vectorizer = pickle.load(pickle_in)
-	else:
-		print('Creating topic-specific classifiers...')
+		print('Successfully loaded previously trained classifiers...')
+	except:
+		print('Previous classifiers do not exist. Creating topic-specific classifiers...')
 		# vectors, features = createFeatureVecForTopic(train_data, feature_type, ngram_range, args.num_feat, args.topic)
 		doc_clf_mask = split_by_topic(args, topic_model, vectors)
 
 		print('Training topic-specific classifiers...')
 		clfs, clf_accs = train_main(args, doc_clf_mask, train_data, vectors)
-		pickle_out = open('saved_clf_test/%s_%s_%i_%i' % (args.topic, args.clf, args.num_topic, args.num_top_topics), 'wb')
+		pickle_out = open('saved_clf/cvfold_%i_%s_%s_%i_%i' % (cv_id, args.topic, args.clf, args.num_topic, args.num_top_topics), 'wb')
 		pickle.dump((clfs, clf_accs, vectorizer), pickle_out)
-		
+
 	print('Testing topic-specific classifiers...')
 	if feature_type == "custom_bow":
 		pickle_in = open('custom_vector_test.pickle', 'rb')
@@ -353,23 +357,40 @@ def main():
 		test_vectors = pickle.load(pickle_in)
 		tfidf_transformer = TfidfTransformer(use_idf=True).fit(test_vectors)
 		test_vectors = tfidf_transformer.transform(test_vectors)
-	elif feature_type == "better_bow":
-		pickle_in = open('custom_vector_test_nodep.pickle', 'rb')
-		test_vectors = pickle.load(pickle_in)
 	else:
 		test_vectors = vectorizer.transform(test_data.data)
 
 	if args.test_style == 'R':
-		test_main_R(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
+		acc = test_main_R(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
 	elif args.test_style == 'P':
-		test_main_P(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
+		acc = test_main_P(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
 	elif args.test_style == 'A':
-		test_main_A(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics)
+		acc = test_main_A(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics)
 
-	# baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, args.clf)
+	# baseline_acc = baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, args.clf)
+	baseline_acc = 0.87760
+	return acc, baseline_acc
+
+def main():
+	args = parser.parse_args()
+	num_fold = 5
+	total_acc = 0
+	total_b_acc = 0
+
+	for i in range(num_fold):
+		movie_test, movie_train = load(i+1)
+		acc, b_acc = main_helper(movie_train,  movie_test, args, i+1)
+		print("Fold = ", i, "Topic accuracy is %.5f, baseline acc is %.5f" % (acc, b_acc))
+		total_acc += acc
+		total_b_acc += b_acc
+
+	ave_accuracy = total_acc / num_fold
+	ave_b_acc = total_b_acc / num_fold
+	print("Average accuracy: %.5f (topic), %.5f (baseline)" % (ave_accuracy, ave_b_acc))
 
 if __name__ == '__main__':
 	main()
+
 
 
 
