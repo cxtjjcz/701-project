@@ -1,0 +1,51 @@
+Last login: Tue Apr 30 15:05:16 on ttys001
+(base) Linhongs-MacBook-Pro:701-project linhongl$ python final_final_haha.py 
+==================================
+Testing combination bow for topic modelling + bow for classification.
+==================================
+Baseline accuracy (single clfr + vect_clfr: 0.84792
+Training accuracy: 0.9836
+Testing accuracy: 0.85972
+==================================
+Testing combination bow for topic modelling + better_bow for classification.
+==================================
+Baseline accuracy (single clfr + vect_clfr: 0.83812
+Training accuracy: 0.99264
+Testing accuracy: 0.8368
+==================================
+Testing combination bow for topic modelling + custom_bow for classification.
+==================================
+Baseline accuracy (single clfr + vect_clfr: 0.94296
+Training accuracy: 0.99412
+Testing accuracy: 0.9396
+==================================
+Testing combination bow for topic modelling + better_custom for classification.
+==================================
+Baseline accuracy (single clfr + vect_clfr: 0.93732
+Training accuracy: 0.98792
+Testing accuracy: 0.94108
+==================================
+Testing combination better_bow for topic modelling + bow for classification.
+==================================
+Baseline accuracy (single clfr + vect_clfr: 0.84792
+Training accuracy: 0.9736
+Testing accuracy: 0.84792
+==================================
+Testing combination better_bow for topic modelling + better_bow for classification.
+==================================
+Baseline accuracy (single clfr + vect_clfr: 0.83812
+Training accuracy: 0.98972
+Testing accuracy: 0.83812
+==================================
+Testing combination better_bow for topic modelling + custom_bow for classification.
+==================================
+Baseline accuracy (single clfr + vect_clfr: 0.94296
+Training accuracy: 0.99024
+Testing accuracy: 0.94296
+==================================
+Testing combination better_bow for topic modelling + better_custom for classification.
+==================================
+Baseline accuracy (single clfr + vect_clfr: 0.93732
+Training accuracy: 0.97932
+Testing accuracy: 0.93732
+(base) Linhongs-MacBook-Pro:701-project linhongl$ 

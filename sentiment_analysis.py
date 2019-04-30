@@ -76,6 +76,13 @@ def createFeatureVecForTopic(dataset, feature_type, ngram_range, num_feat, topic
 			features = pickle.load(f)
 		vectorizer = None
 
+	elif feature_type == 'better_custom':
+		with open('vector-3-0.95-2-dep-True.pickle', 'rb') as f:
+			vectors = pickle.load(f)
+		with open('vector-3-0.95-2-dep-True-feature_name.pickle', 'rb') as f:
+			features = pickle.load(f)
+		vectorizer = None
+
 	elif feature_type == 'custom_tf':
 		with open('custom_vector.pickle', 'rb') as f:
 			vectors = pickle.load(f)
@@ -299,10 +306,9 @@ def baseline_train_n_test(train_vectors, train_labels, test_vectors, test_labels
 	elif clf_type == 'SVM':
 		clf = SVC(kernel="linear").fit(train_vectors, train_labels)
 	acc = np.mean(clf.predict(test_vectors) == test_labels)
-	# print(acc)
+	print(acc)
 	# print("{:.10f}".format(acc))
 	return acc
-
 
 def main_helper(train_data, test_data, args, cv_id, cv = True):
 
@@ -330,7 +336,7 @@ def main_helper(train_data, test_data, args, cv_id, cv = True):
 	# 	print(len(features))
 
 	try:
-		pickle_in = open('saved_clf/cvfold_%i_%s_%s_%i_%i' % (cv_id, args.topic, args.clf, args.num_topic, args.num_top_topics), 'rb')
+		pickle_in = open('saved_clf/%s_cvfold_%i_%s_%s_%i_%i' % (feature_type, cv_id, args.topic, args.clf, args.num_topic, args.num_top_topics), 'rb')
 		clfs, clf_accs, vectorizer = pickle.load(pickle_in)
 		print('Successfully loaded previously trained classifiers...')
 	except:
@@ -340,13 +346,19 @@ def main_helper(train_data, test_data, args, cv_id, cv = True):
 
 		print('Training topic-specific classifiers...')
 		clfs, clf_accs = train_main(args, doc_clf_mask, train_data, vectors)
-		pickle_out = open('saved_clf/cvfold_%i_%s_%s_%i_%i' % (cv_id, args.topic, args.clf, args.num_topic, args.num_top_topics), 'wb')
+		pickle_out = open('saved_clf/%s_cvfold_%i_%s_%s_%i_%i' % (feature_type, cv_id, args.topic, args.clf, args.num_topic, args.num_top_topics), 'wb')
 		pickle.dump((clfs, clf_accs, vectorizer), pickle_out)
 
 	print('Testing topic-specific classifiers...')
+
 	if feature_type == "custom_bow":
 		pickle_in = open('custom_vector_test.pickle', 'rb')
 		test_vectors = pickle.load(pickle_in)
+
+	elif feature_type == 'better_custom':
+		pickle_in = open('vector-3-0.95-2-dep-True-test.pickle', 'rb')
+		test_vectors = pickle.load(pickle_in)
+
 	elif feature_type == "custom_tf":
 		pickle_in = open('custom_vector_test.pickle', 'rb')
 		test_vectors = pickle.load(pickle_in)
@@ -388,8 +400,90 @@ def main():
 	ave_b_acc = total_b_acc / num_fold
 	print("Average accuracy: %.5f (topic), %.5f (baseline)" % (ave_accuracy, ave_b_acc))
 
+def end_to_end(): # training set of size 25000; test set of size 25000
+
+	args = parser.parse_args()
+	print('Loading data...')
+	train_data, test_data = readData("")
+	feature_type = args.vect
+	ngram_range = (1, args.ngram)
+
+	try:
+		pickle_in = open('saved_model/end_to_end_%s_%s_%i' % (args.topic, args.vect, args.num_topic), 'rb')
+		topic_model, features, vectors, vectorizer = pickle.load(pickle_in)
+		print('Successfully loaded previous topic model...')
+	except:
+		assert(False)
+
+		print('Previous model does not exist. Creating topic model for the corpus...')
+		topic_model, features, vectors, vectorizer = createTopicModel(train_data, feature_type, ngram_range, args.num_feat, args.topic, args.num_topic)
+		pickle_out = open('saved_model/end_to_end_%s_%s_%i' % (args.topic, args.vect, args.num_topic), 'wb')
+		pickle.dump((topic_model, features, vectors, vectorizer), pickle_out)
+	
+	# if args.display_topics: 
+	# 	num_top_words = 10 # display 10 top words from extracted topics
+	# 	display_topics(topic_model, features, num_top_words)
+
+	# if args.display_features:
+	# 	# for i in features:
+	# 	# 	print(i)
+	# 	print(len(features))
+
+	try:
+		pickle_in = open('saved_clf/end_to_end_%s_%s_%s_%i_%i' % (args.topic, feature_type, args.clf, args.num_topic, args.num_top_topics), 'rb')
+		clfs, clf_accs, vectorizer = pickle.load(pickle_in)
+		print('Successfully loaded previously trained classifiers...')
+	except:
+		assert(False)
+		print('Previous classifiers do not exist. Creating topic-specific classifiers...')
+		# vectors, features = createFeatureVecForTopic(train_data, feature_type, ngram_range, args.num_feat, args.topic)
+		doc_clf_mask = split_by_topic(args, topic_model, vectors)
+
+		print('Training topic-specific classifiers...')
+		clfs, clf_accs = train_main(args, doc_clf_mask, train_data, vectors)
+		pickle_out = open('saved_clf/end_to_end_%s_%s_%s_%i_%i' % (args.topic, feature_type, args.clf, args.num_topic, args.num_top_topics), 'wb')
+		pickle.dump((clfs, clf_accs, vectorizer), pickle_out)
+
+	print('Testing topic-specific classifiers...')
+	if feature_type == "custom_bow":
+		pickle_in = open('custom_vector_test.pickle', 'rb')
+		test_vectors = pickle.load(pickle_in)
+
+	elif feature_type == 'better_custom':
+		pickle_in = open('vector-3-0.95-2-dep-True-test.pickle', 'rb')
+		test_vectors = pickle.load(pickle_in)
+
+	elif feature_type == "custom_tf":
+		pickle_in = open('custom_vector_test.pickle', 'rb')
+		test_vectors = pickle.load(pickle_in)
+		tf_transformer = TfidfTransformer(use_idf=False).fit(test_vectors)
+		test_vectors = tf_transformer.transform(test_vectors)
+	elif feature_type == "custom_tfidf":
+		pickle_in = open('custom_vector_test.pickle', 'rb')
+		test_vectors = pickle.load(pickle_in)
+		tfidf_transformer = TfidfTransformer(use_idf=True).fit(test_vectors)
+		test_vectors = tfidf_transformer.transform(test_vectors)
+	else:
+		print('Using regular bow')
+
+		test_vectors = vectorizer.transform(test_data.data)
+
+	if args.test_style == 'R':
+		acc = test_main_R(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics) # test based on topic relevance
+	elif args.test_style == 'P':
+		acc = test_main_P(clfs, clf_accs, test_vectors, topic_model, test_data.target) # test based on topic's ability to do sentiment classification
+	elif args.test_style == 'A':
+		acc = test_main_A(clfs, test_vectors, topic_model, test_data.target, args.num_top_topics)
+
+	baseline_acc = baseline_train_n_test(vectors, train_data.target, test_vectors, test_data.target, args.clf)
+	# baseline_acc = 0.87760
+	print('Acc with topic:', acc)
+	print('Baseline acc:', baseline_acc)
+	return acc
+
 if __name__ == '__main__':
-	main()
+	# main()
+	end_to_end()
 
 
 
